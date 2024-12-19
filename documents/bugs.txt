@@ -1,0 +1,12 @@
++gerer les restrictions d'agence pour les transferts carte
++ajouter la date d'expiration des cartes, et mettre une jauge au niveau des cartes montrant à quel point la carte est proche de l'expiration
+	+ps: les cartes du même lot ont la même date d'expiration
++ajouter le prix de vente sur les coficarte...
++les filtres au niveau du transfert ne marchent pas
++ajouter la fonctionalité de renvoie sur les coficartes : il suffit de transférer la carte à la personne qui a envoyé
+la recherche sur les coficartes ne marche pas
+
+gerer l'activation de la carte après la vente au niveau des caissiers
+ajouter le tel du client, et le mail, pièce d"identité(unique),
+avoir les cartes avec des pack non activé
+ajouter l'option d'exportation des données

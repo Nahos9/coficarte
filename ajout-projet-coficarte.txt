@@ -1,0 +1,4 @@
+-ajouter l'option d'exportation des données
++ajouter la date d'expiration des cartes, et mettre une jauge au niveau des cartes montrant à quel point la carte est proche de l'expiration
+	+ps: les cartes du même lot ont la même date d'expiration
+-prendre en compte le statut d'activation de la coficarte lors de la vente
