@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
 		$agencies["212"] = Agency::where("code", "212")->first();
 		$agencies["213"] = Agency::where("code", "213")->first();
 		$agencies["214"] = Agency::where("code", "214")->first();
+		$agencies["215"] = Agency::where("code", "215")->first();
 
 		// foreach ($agencies as $agency_code => $agency) {
 		// 	User::factory(1)->create(["name" => "agency_head_$agency_code", "profile" => "agency_head", "password" => Hash::make("P@sse123"), "password_change_required" => false, "activated" => true, "email" => "agency_head_$agency_code@cofinacorp.com", "agency_id" => $agency->id])->first();
@@ -48,56 +49,8 @@ class UserSeeder extends Seeder
 
 		// echo "marketing_manager Token: " . $plainTextToken . "\n";
 		$userList = [
-			["name" => "Charles GAMLIGO", "email" => "charles.gamligo@cofinacorp.com", "agency_id" => 1, "profile" => "admin", "password" => "Coftg@20$*21ù!ad"],
-			["name" => "AMADOU DIOP MAR", "email" => "amadou.diop@cofinacorp.com", "agency_id" => 1, "profile" => "admin", "password" => "Coftg@20$*21ù!ad"],
-			["name" => "Claude KONOU", "email" => "claude.konou@cofinacorp.com", "agency_id" => 1, "profile" => "admin", "password" => "Coftg@20$*21ù!ad"],
-			["name" => "Pedro Lonsosou KOZON", "email" => "lonsosou.kozon@cofinacorp.com", "agency_id" => 1, "profile" => "admin", "password" => "Coftg@20$*21ù!ad"],
-
-			["name" => "Mahéva T. Geneviève BEHANZIN - PIETRI", "email" => "maheva.behanzin-pietri@cofinacorp.com", "agency_id" => 1, "profile" => "audit_controller", "password" => "P@sse123"],
-			["name" => "Ekoe Fabrice KOUSSAWO", "email" => "fabrice.koussawo@cofinacorp.com", "agency_id" => 1, "profile" => "audit_controller", "password" => "P@sse123"],
-			["name" => "Migbodji YEBESSE", "email" => "migbodji.yebesse@cofinacorp.com", "agency_id" => 1, "profile" => "audit_controller", "password" => "P@sse123"],
-			["name" => "Charles Tokpon Viwuma DOSSOU", "email" => "charles.dossou@cofinacorp.com", "agency_id" => 1, "profile" => "audit_controller", "password" => "P@sse123"],
-
-			["name" => "Lynda SOWU", "email" => "lynda.sowu@cofinacorp.com", "agency_id" => 1, "profile" => "marketing_manager", "password" => "P@sse123"],
-
-			["name" => "Ayi Mawulolo YEBOVI", "email" => "mawulolo.yebovi@cofinacorp.com", "agency_id" => 2, "profile" => "agency_head", "password" => "P@sse123"],
-			["name" => "Mouyidine Kayode TSOUMA", "email" => "mouyidine.tsouma@cofinacorp.com", "agency_id" => 3, "profile" => "agency_head", "password" => "P@sse123"],
-			["name" => "Ayao Mawuégnégan BOSSOU", "email" => "ayao.bossou@cofinacorp.com", "agency_id" => 4, "profile" => "agency_head", "password" => "P@sse123"],
-			["name" => "Sambiani KOMBATE", "email" => "sambiani.kombate@cofinacorp.com", "agency_id" => 5, "profile" => "agency_head", "password" => "P@sse123"],
-
-			["name" => "Christian Homba AKALA", "email" => 
-			"christian.akala@cofinacorp.com"
-			, "agency_id" => 2, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			["name" => "Kavegue Belinda KAVEGUE", "email" => 
-			"belinda.kavegue@cofinacorp.com"
-			, "agency_id" => 2, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			["name" => "Adjo Massan NUKUNU", "email" => 
-			"adjo-massan.nukunu@cofinacorp.com"
-			, "agency_id" => 2, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			
-			["name" => "Jordi ASSOGBA", "email" => 
-			"jordi.assogba@cofinacorp.com"
-			, "agency_id" => 3, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			["name" => "Hornelia ATTIKOSSI", "email" => 
-			"hornelia.attikossi@cofinacorp.com"
-			, "agency_id" => 3, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			["name" => "Afi Reine SATCHI", "email" => 
-			"afi-reine.satchi@cofinacorp.com"
-			, "agency_id" => 3, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-
-			["name" => "Essi Pleasure TOGBEY", "email" => 
-			"pleasure.togbey@cofinacorp.com"
-			, "agency_id" => 4, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			["name" => "Isso Dénis TACHIDA", "email" => 
-			"denis.tatchida@cofinacorp.com"
-			, "agency_id" => 4, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-
-			["name" => "Diane ABIASSI", "email" => 
-			"diane.abiassi@cofinacorp.com"
-			, "agency_id" => 5, "profile" => "responsible_for_customer", "password" => "P@sse123"],
-			["name" => "Ambah Essumata Maba JOHNSON", "email" => 
-			"ambah.johnson@cofinacorp.com"
-			, "agency_id" => 5, "profile" => "responsible_for_customer", "password" => "P@sse123"],
+			["name" => "Nahos IGALO MOUSSAVOU", "email" => "nahos.igalo@cofinacorp.com", "agency_id" => 1, "profile" => "admin", "password" => "P@sse123"],
+			["name" => "Sophie", "email" => "sophie.ampoumet@cofinacorp.com", "agency_id" => 1, "profile" => "marketing_manager", "password" => "P@sse123"],
 		];
 
 		foreach ($userList as $user) {

@@ -20,24 +20,29 @@ class AgencySeeder extends Seeder
                 "code" => "210",
             ],
             [
-                "name" => "Agence Principale",
+                "name" => "Agence Bessieux",
                 "abbreviation" => "AGP",
                 "code" => "211",
             ],
             [
-                "name" => "Agence Agoé",
+                "name" => "Agence Léon MBA",
                 "abbreviation" => "AAG",
                 "code" => "212",
             ],
             [
-                "name" => "Agence Adidogomé",
+                "name" => "Agence Louis",
                 "abbreviation" => "AAD",
                 "code" => "213",
             ],
             [
-                "name" => "Agence Akodésséwa",
+                "name" => "Agence Nzeng-Ayong",
                 "abbreviation" => "AAK",
                 "code" => "214",
+            ],
+            [
+                "name" => "Agence PK12",
+                "abbreviation" => "AAK1",
+                "code" => "215",
             ],
         ];
 
