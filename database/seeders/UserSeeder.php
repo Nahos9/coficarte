@@ -50,7 +50,10 @@ class UserSeeder extends Seeder
 		// echo "marketing_manager Token: " . $plainTextToken . "\n";
 		$userList = [
 			["name" => "Nahos IGALO MOUSSAVOU", "email" => "nahos.igalo@cofinacorp.com", "agency_id" => 1, "profile" => "admin", "password" => "P@sse123"],
-			["name" => "Sophie", "email" => "sophie.ampoumet@cofinacorp.com", "agency_id" => 1, "profile" => "marketing_manager", "password" => "P@sse123"],
+			["name" => "Sophie AMPOUMET", "email" => "sophie.ampoumet@cofinacorp.com", "agency_id" => 1, "profile" => "marketing_manager", "password" => "P@sse123"],
+			// ["name" => "Sonia AKOME", "email" => "sonia.akome@cofinacorp.com", "agency_id" => 2, "profile" => "responsible_for_customer", "password" => "P@sse123"],
+			["name" => "Willy MAKITA", "email" => "willy.makita@cofinacorp.com", "agency_id" => 2, "profile" => "agency_head", "password" => "P@sse123"],
+			["name" => "Clarisse GOMIS", "email" => "clarisse.gomis@cofinacorp.com", "agency_id" => 4, "profile" => "agency_head", "password" => "P@sse123"],
 		];
 
 		foreach ($userList as $user) {

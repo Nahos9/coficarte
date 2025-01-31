@@ -11,6 +11,7 @@ import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import { paginationMeta } from '@api-utils/paginationMeta'
 import { $api } from '@/utils/api';
 
+
 const searchQuery = ref('')
 const connectedUser = useCookie('userData').value
 const loadings = ref([])
@@ -102,30 +103,21 @@ const {
 const possessorList = computed(() => possessorListData.value.data)
 
 const creditCardList = computed(() => creditCardListData.value.data)
+console.log("mes cartes",creditCardList);
 const totalcreditCard = computed(() => creditCardListData.value.total)
 const lastPage = computed(() => creditCardListData.value.last_page)
 // Math.min(Math.ceil(totalcreditCard / itemsPerPage), 5)
 const isSnackbarScrollReverseVisible = ref(false)
 const snackbarMessage = ref("")
 const snackbarCollor = ref("success")
+
 </script>
 
 <template>
 	<div>
 		<!-- 👉 widgets -->
-		<VCard class="mb-6">
-			<VCardText>
-				<VRow>
-					<VCardText>
-						<h2>
-							Liste des coficartes
-						</h2>
-					</VCardText>
-				</VRow>
-			</VCardText>
-		</VCard>
-
 		<!-- 👉 credit-cards -->
+  
 		<VCard title="Filtres" class="mb-6">
 			<VCardText>
 				<VRow>

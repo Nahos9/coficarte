@@ -14,6 +14,7 @@ class TransferDetail extends Model
 	protected $fillable = [
 		"transfer_id",
 		"credit_card_id",
+		"user_id",
 	];
 
 	public $timestamps = false;
@@ -26,5 +27,9 @@ class TransferDetail extends Model
 	public function credit_card(): BelongsTo
 	{
 		return $this->belongsTo(CreditCard::class, "credit_card_id", "id");
+	}
+	public function users(): BelongsTo
+	{
+		return $this->belongsTo(users::class, "receiver_id", "id");
 	}
 }

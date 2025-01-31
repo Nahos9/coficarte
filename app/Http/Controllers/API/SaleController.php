@@ -130,6 +130,7 @@ class SaleController extends Controller
 				"account_number" => "nullable|min_digits:12",
 				"account_type_id" => "required|exists:account_types,id",
 				"customer_phone_number" => "required|min:2",
+				"is_dotation" => "nullable|boolean"
 			],
 			manualValidations: function ($requestData) use ($connectedUser) {
 				$creditCard = CreditCard::find($requestData["credit_card_id"]);
@@ -231,7 +232,7 @@ class SaleController extends Controller
 			},
 			beforeCommit: function ($model, $requestData) {
 				$creditCard = $model->credit_card;
-				$creditCard->update(["status" => "owned"]);
+				$creditCard->update(["status" => "sold"]);
 				return $model;
 			},
 			authName: "unblock"

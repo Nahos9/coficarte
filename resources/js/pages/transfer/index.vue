@@ -41,6 +41,10 @@ const headers = [
 		title: 'Commentaire',
 		key: 'comment'
 	},
+  {
+		title: 'Nbre de carte',
+		key: 'nbr_carte_in_transfert'
+	},
 	{
 		title: 'Date de transfert',
 		key: 'created_at_fr'
@@ -199,6 +203,9 @@ const userList = computed(() => userListData.value.data)
 				<template #item.comment="{ item }">
 					{{ item.comment ?? '-' }}
 				</template>
+        <!-- <template #item.transfert="{ item }">
+					{{ item.transfert ?? '-' }}
+				</template> -->
 
 				<template #item.actions="{ item }">
 					<div class="text-center">

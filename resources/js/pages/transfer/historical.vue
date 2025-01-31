@@ -39,6 +39,10 @@ const headers = [
 		title: 'Receptioniste',
 		key: 'receiver.name'
 	},
+  {
+		title: 'Nbre carte',
+		key: 'nbr_carte_in_transfert'
+	},
 	{
 		title: 'Commentaire',
 		key: 'comment'

@@ -16,7 +16,8 @@ const creditCardData = ref({
 	delivery_date: "2024-05-05",
 	expiration_date: "2030-05-05",
 	invoice_reference: "QSDFSDFSDFSDFQSDFSQ",
-	price: 5000,
+	price: 11900,
+	buy: 5000,
 });
 
 const getResetCreditCardError = () => {
@@ -27,6 +28,7 @@ const getResetCreditCardError = () => {
 		expiration_date: "",
 		invoice_reference: "",
 		price: "",
+		buy: "",
 	};
 };
 
@@ -46,6 +48,7 @@ const onSubmit = () => {
 					expiration_date: creditCardData.value.expiration_date,
 					invoice_reference: creditCardData.value.invoice_reference,
 					price: creditCardData.value.price,
+					buy: creditCardData.value.buy,
 				},
 			});
 
@@ -113,6 +116,11 @@ const snackbarCollor = ref("success");
 										<VCol cols="12" md="12" lg="12">
 											<AppTextField v-model="creditCardData.price"
 												:error-messages="creditCardError.price" label="Prix de vente"
+												type="number" placeholder="Ex: 5000" :rules="[requiredValidator]" />
+										</VCol>
+                    <VCol cols="12" md="12" lg="12">
+											<AppTextField v-model="creditCardData.buy"
+												:error-messages="creditCardError.buy" label="Prix d'achat"
 												type="number" placeholder="Ex: 5000" :rules="[requiredValidator]" />
 										</VCol>
 									</VRow>

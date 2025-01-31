@@ -10,16 +10,16 @@ export const redirects = [
 			const userData = useCookie('userData')
 			const userRole = userData.value?.role
 			if (userRole === 'admin')
-				return { name: 'user' }
+				return { name: 'dashboard' }
 
 			if (userRole === 'responsible_for_customer')
-				return { name: 'sale' }
+				return { name: 'dashboard' }
 
 			if (userRole === 'marketing_manager')
-				return { name: 'transfer' }
+				return { name: 'dashboard' }
 
 			if (userRole === 'agency_head')
-				return { name: 'transfer' }
+				return { name: 'dashboard' }
 
 			if (userRole === 'audit_controller')
 				return { name: 'transfer' }

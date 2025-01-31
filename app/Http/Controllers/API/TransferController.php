@@ -9,6 +9,8 @@ use App\Models\TransferDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+
 
 /**
  * @group Transfert
@@ -36,23 +38,30 @@ class TransferController extends Controller
 	public function index(Request $request)
 	{
 		if (($authorisation = Gate::inspect('viewAny', Transfer::class))->allowed()) {
-			$list = Transfer::query();
+			$list = Transfer::query()
+			->select('transfers.*') // Sélectionner tous les champs de la table transfers
+            ->withCount(['transfer_details as nbr_carte_in_transfert' => function ($query) {
+                $query->select(DB::raw('count(*)'));
+            }]);
+			// dd($list);
 			$requestData = $request->all();
 			$list = $this->queryFilter($list, $requestData, "Transfer");
 			$list = $this->queryRelationAdd($list, $requestData, "Transfer");
 			$list = $this->queryMultipeValvueFilter($list, $requestData, ["status" => ["w" => "waiting", "r" => "rejected", "c" => "canceled", "v" => "validated"]]);
 			$connectedUser = $request->user();
+			// $lastTransfert = Transfer::where('receiver_id', $connectedUser->id)
+            //              ->orderBy('created_at', 'desc')
+            //              ->first();
+			// if(!is_null($lastTransfert)){
+			// 	$nbr_carte_in_transfert = DB::select("SELECT count(*) as nbr_carte FROM transfers t  JOIN transfer_details td ON t.receiver_id = td.user_id WHERE td.transfer_id = $lastTransfert->id");
+			// }
+			
+			// !is_null($transfers[0]->nbr_carte)?? $transfers[0]->nbr_carte;
 			in_array($connectedUser->profile, ["responsible_for_customer", "agency_head"]) ? $list->where(function ($query) use ($connectedUser) {
 				$query->where('sender_id', $connectedUser->id)->orWhere('receiver_id', $connectedUser->id);
 			}) : null;
-
-			// $connectedUser->profile == "agency_head" ? $list->where('sender_id', $connectedUser->id)->orWhere('receiver_id', $connectedUser->id)->orWhere(function ($query) use ($connectedUser) {
-			// 	$query->whereHas("sender", function ($query) use ($connectedUser) {
-			// 		$query->where('agency_id', $connectedUser->agency_id);
-			// 	})->orWhereHas("sender", function ($query) use ($connectedUser) {
-			// 		$query->where('agency_id', $connectedUser->agency_id);
-			// 	});
-			// }) : null;
+			
+			// dd($list);
 
 			return $this->responseIndexOk($list, $requestData, "Transfer");
 		} else {
@@ -151,7 +160,7 @@ class TransferController extends Controller
 			},
 			beforeCommit: function ($model, $requestData, $manualValidationsData) {
 				foreach ($manualValidationsData["credit_card_id_list"] as $creditCardId) {
-					TransferDetail::create(["transfer_id" => $model->id, "credit_card_id" => $creditCardId]);
+					TransferDetail::create(["transfer_id" => $model->id, "credit_card_id" => $creditCardId,"user_id" => $requestData["receiver_id"]]);
 				}
 				return $model;
 			},

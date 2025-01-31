@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
+
 /**
  * @group Utilisateur
  *
@@ -118,6 +119,7 @@ class UserController extends Controller
 	 */
 	public function store(Request $request)
 	{
+		// dd($request);
 		return $this->modelStore(
 			modelClass: "App\Models\User",
 			requestData: $request->all(),
@@ -138,6 +140,14 @@ class UserController extends Controller
 						$requestData["password"] = Hash::make($requestData["password"]);
 					}
 				}
+				// dd($requestData);
+				// $user = [
+				// 	"subject" => "IDENTIFIANTS DE CONNEXION APPLICATION COFI CARTE",
+				// 	"name" => $requestData["name"],
+				// 	"login" => $requestData["email"],
+				// 	"password" => "P@sse123"
+				// ];
+				// \Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
 				return $requestData;
 			}
 		);

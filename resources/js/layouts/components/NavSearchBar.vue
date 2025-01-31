@@ -16,7 +16,17 @@ const suggestionGroups = [
 	{
 		title: 'Courants',
 		content: [
+    {
+				icon: 'dashboard',
+				title: 'Dashboard',
+				url: { name: 'dashboard' },
+			},
 			{
+				icon: 'tabler-credit-card',
+				title: 'Dashboard',
+				url: { name: 'credit-card' },
+			},
+      {
 				icon: 'tabler-credit-card',
 				title: 'Cartes',
 				url: { name: 'credit-card' },

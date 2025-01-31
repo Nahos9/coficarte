@@ -20,6 +20,7 @@ const saleData = ref({
 	account_number: null,
 	account_type_id: null,
 	customer_phone_number: null,
+  is_dotation: false,
 });
 
 const getResetSaleError = () => {
@@ -32,6 +33,7 @@ const getResetSaleError = () => {
 		account_number: "",
 		account_type_id: "",
 		customer_phone_number: "",
+    is_dotation: "",
 	};
 };
 
@@ -53,6 +55,7 @@ const onSubmit = () => {
 					account_number: saleData.value.account_number,
 					account_type_id: saleData.value.account_type_id,
 					customer_phone_number: saleData.value.customer_phone_number,
+          is_dotation: saleData.value.is_dotation,
 				},
 			});
 
@@ -148,14 +151,17 @@ const snackbarCollor = ref("success");
 										<VCol cols="12" md="12" lg="12">
 											<AppTextField v-model="saleData.account_number" type="number"
 												:error-messages="saleError.account_number
-													" label="Numéro de compte du client" placeholder="Ex: 251789654001" />
+													" label="Numéro de compte du client" placeholder="Ex: 371360000786" />
 										</VCol>
 										<VCol cols="12" md="12" lg="12">
 											<AppTextField v-model="saleData.customer_phone_number"
 												:error-messages="saleError.customer_phone_number
-													" label="Numéro de téléphone du client" placeholder="Ex: +228 90 90 90 90" />
+													" label="Numéro de téléphone du client" placeholder="Ex: +241 77 56 76 00" />
 										</VCol>
-										<VCol cols="12" md="12" lg="12">
+                    <VCol cols="12" md="12" lg="12">
+                      <VCheckbox v-model="saleData.is_dotation" :error-messages="saleError.is_dotation" label="Dotation" />
+                    </VCol>
+                    <VCol cols="12" md="12" lg="12">
 											<AppAutocomplete v-model="saleData.account_type_id" :items="accountTypeList"
 												:error-messages="saleError.account_type_id" label="Type de compte"
 												item-title="name" item-value="id" :rules="[requiredValidator]" />

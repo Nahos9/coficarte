@@ -21,6 +21,7 @@ return new class extends Migration {
 			$table->foreignId("lot_id")->nullable()->constrained()->cascadeOnDelete();
 			$table->enum("status", ["returned", "owned", "sold"])->default("owned");
 			$table->decimal("price");
+			$table->decimal("buy");
 			$table->timestamps();
 		});
 	}

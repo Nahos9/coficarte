@@ -40,7 +40,8 @@ import type {
 declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     '$error': RouteRecordInfo<'$error', '/:error(.*)', { error: ParamValue<true> }, { error: ParamValue<false> }>,
-    'credit-card': RouteRecordInfo<'credit-card', '/credit-card', Record<never, never>, Record<never, never>>,
+    // 'credit-card': RouteRecordInfo<'credit-card', '/credit-card', Record<never, never>, Record<never, never>>,
+    'dashboard': RouteRecordInfo<'dashboard', '/dashboard', Record<never, never>, Record<never, never>>,
     'credit-card-id': RouteRecordInfo<'credit-card-id', '/credit-card/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'credit-card-add': RouteRecordInfo<'credit-card-add', '/credit-card/add', Record<never, never>, Record<never, never>>,
     'credit-card-edit-id': RouteRecordInfo<'credit-card-edit-id', '/credit-card/edit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,

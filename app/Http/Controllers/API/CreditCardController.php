@@ -5,10 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Models\Lot;
 use App\Models\User;
 use App\Models\CreditCard;
+use App\Models\Sale;
+use App\Models\Agency;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 /**
  * @group Coficarte
  *
@@ -116,6 +119,7 @@ class CreditCardController extends Controller
 				"delivery_date" => "required|date",
 				"invoice_reference" => "required",
 				"price" => "required|numeric",
+				"buy" => "required|numeric",
 			],
 			beforeCreate: function ($requestData) use ($request) {
 				$currentUser = $request->user();
@@ -211,5 +215,205 @@ class CreditCardController extends Controller
 			modelClass: "App\Models\CreditCard",
 			elementName: "La coficarte",
 		);
+	}
+
+	public function statistiques(Request $request)
+	{
+		// dd($request->input());
+		$start_date = $request->input('start_date')?$request->input('start_date') :  Carbon::now()->toDateString();
+		$end_date = $request->input('end_date')? $request->input('end_date') :  Carbon::now()->toDateString();
+
+		$stats = [];
+		$cartes_par_agence_avant_date = DB::table('credit_cards')
+		->join('users', 'credit_cards.possessor_id', '=', 'users.id')
+		->join('agencies', 'users.agency_id', '=', 'agencies.id')
+		->where('credit_cards.delivery_date','<=', $end_date)
+		->select('agencies.name as agency_name', DB::raw('count(*) as total'))
+		->where('credit_cards.status','owned')
+		->groupBy('agencies.name')
+		->get();
+		$cartes_par_agence = DB::select("SELECT a.name as agency_name, COUNT(*) total
+		FROM credit_cards cc 
+		JOIN users u ON u.id = cc.possessor_id
+		JOIN agencies a ON a.id = u.agency_id
+		-- WHERE cc.status = 'owned' OR cc.status = 'sold'
+		AND cc.delivery_date BETWEEN ? AND ? 
+		GROUP BY a.name ",[$start_date,$end_date]);
+
+		
+		// dd($cartes_par_agence);
+
+		$agencySales_a_date = DB::select("SELECT a.name as agence, SUM(s.sale_price) as montant 
+		FROM users u
+		JOIN sales s ON u.id = s.seller_id
+		JOIN agencies a ON a.id = u.agency_id 
+		WHERE s.unlock_status = 'unlocked'
+		AND s.sale_date <= '$end_date'
+		GROUP BY a.name");
+
+		$agencySales = DB::select("SELECT a.name as agence, SUM(s.sale_price) as montant FROM users u
+			JOIN sales s ON u.id = s.seller_id
+			JOIN agencies a ON a.id = u.agency_id 
+			WHERE s.unlock_status = 'unlocked'
+			AND s.sale_date BETWEEN ? AND ?
+			GROUP BY a.name",[$start_date,$end_date]);
+		
+		
+		$vent_bessieux_a_date = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE users.name = 'Sonia Akome'
+			AND sales.sale_date <= '$end_date'
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC"
+		,);
+	// dd($vent_bessieux_a_date);
+		$vent_bessieux = DB::select('
+			SELECT 
+				DATE_FORMAT(sales.sale_date, "%Y-%m") as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE users.name = "Sonia Akome"
+			AND sales.sale_date BETWEEN ? AND ?
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC
+		', [$start_date, $end_date]);
+	
+		$vente_nzeng_a_date = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE users.name = 'Kelly MAGANGHE'
+			AND sales.sale_date <= '$end_date'
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC"
+		);
+
+		$vente_nzeng = DB::select('
+			SELECT 
+				DATE_FORMAT(sales.sale_date, "%Y-%m") as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE users.name = "Kelly MAGANGHE"
+			AND sales.sale_date BETWEEN ? AND ?
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC
+		', [$start_date, $end_date]);
+
+		$vente_louis = DB::select(
+		"SELECT 
+			DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+			SUM(sales.sale_price) as mt_vendue,
+			agencies.name as agence_name,
+			users.name as cassiere_name,
+			sales.sale_date
+		FROM sales 
+		INNER JOIN users ON sales.seller_id = users.id 
+		INNER JOIN agencies ON agencies.id = users.agency_id
+		WHERE users.name = 'Marlene ENANGA'
+		AND sales.sale_date <= '$end_date'
+		GROUP BY month, agencies.name,users.name,sales.sale_date
+		ORDER BY month ASC"
+	);
+		$vente_louis_a_date = DB::select('
+			SELECT 
+				DATE_FORMAT(sales.sale_date, "%Y-%m") as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE users.name = "Marlene ENANGA"
+			AND sales.sale_date BETWEEN ? AND ?
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC
+		', [$start_date, $end_date]);
+	
+		
+		$sotk_a_date = CreditCard::where('delivery_date','<=',$end_date)->where('status','owned')->count();
+
+		$stock_initiale = DB::select("SELECT COUNT(*) as total FROM credit_cards WHERE delivery_date BETWEEN ? AND ?", [$start_date, $end_date]);
+		$total_stock_initial = $stock_initiale[0]->total ?? 0;
+	
+		$nbre_total_vendu = 0;
+
+		$nrb_cartes_sale_pack_a_date = Sale::where('is_dotation', false)
+		->where('unlock_status','unlocked')->where('sale_date','<=',$end_date)->count();
+		$nrb_cartes_sale_pack = Sale::where('is_dotation', false)
+		->where('unlock_status','unlocked')->where('sale_date','>=',$start_date)->where('sale_date','<=',$end_date)->count();
+		$nrb_cartes_sale_hpack_a_date = Sale::where('is_dotation', true)
+		->where('unlock_status','unlocked')->where('sale_date','<=',$end_date)->count();
+		$nrb_cartes_sale_hpack = Sale::where('is_dotation', true)
+		->where('unlock_status','unlocked')->where('sale_date','>=',$start_date)->where('sale_date','<=',$end_date)->count();
+		$nbre_total_vendu = ($nrb_cartes_sale_pack == 0) 
+		? $nrb_cartes_sale_pack_a_date + $nrb_cartes_sale_hpack_a_date 
+		: $nrb_cartes_sale_pack + $nrb_cartes_sale_hpack;
+		// dd($nbre_total_vendu);
+
+
+
+		$montant_carte_vendues_hors_pack = DB::select('SELECT SUM(sales.sale_price) as total_vente FROM sales WHERE sales.is_dotation = false AND sales.unlock_status = "unlocked"');
+		$montant_achat_hors_pack = DB::select('SELECT SUM(credit_cards.buy) as total_vente FROM sales JOIN credit_cards ON sales.credit_card_id = credit_cards.id  WHERE sales.is_dotation = false AND sales.unlock_status = "unlocked"');
+		$montant_achat_pack = DB::select('SELECT SUM(credit_cards.buy) as total_vente FROM sales JOIN credit_cards ON sales.credit_card_id = credit_cards.id  WHERE sales.is_dotation = true AND sales.unlock_status = "unlocked"');
+		$montant_carte_vendues_pack = DB::select('SELECT SUM(sales.sale_price) as total_vente FROM sales WHERE sales.is_dotation = true AND sales.unlock_status = "unlocked"');
+		$montant_vendu_carte = $nbre_total_vendu * 11900;
+		$montant_achat_cartes = $nbre_total_vendu * 5000;
+		
+		$benefices = $montant_vendu_carte - $montant_achat_cartes;
+		if($montant_vendu_carte == 0){
+			$taux_marge = 0;
+		}else{
+			$taux_marge = round(($benefices/$montant_vendu_carte) * 100,2);
+		}
+		// dd($vente_louis);
+		// $montant_vendu_carte = $montant_carte_vendues_hors_pack[0]->total_vente;
+
+		//Stock par agence
+		// $stock_bessieux = DB::select("SELECT * FROM agencies a JOIN users u ON u.agency_id = a")
+		$stats['cartes_par_agence'] = empty($cartes_par_agence) ? $cartes_par_agence_avant_date: $cartes_par_agence;
+		$stats['cartes_vendues_par_agence'] = empty($agencySales) ? $agencySales_a_date: $agencySales;
+		// dd($stats['cartes_vendues_par_agence']);
+		$stats["stock"] = ($total_stock_initial == 0)? $sotk_a_date:$total_stock_initial;
+		$stats["total_stock_initial"] = $total_stock_initial;
+		$stats["nrb_cartes_sale_pack"] = $nrb_cartes_sale_pack;
+		$stats["nrb_cartes_sale_hpack"] = $nrb_cartes_sale_hpack;
+		$stats["montant_carte_vendues_hors_pack"] = $montant_carte_vendues_hors_pack;
+		$stats["montant_carte_vendues_pack"] = $montant_carte_vendues_pack;
+		$stats["montant_vendu_carte"] = $montant_vendu_carte;
+		$stats["test"] = empty($vent_bessieux) ? $vent_bessieux_a_date : $vent_bessieux;
+		$stats["test1"] = empty($vente_nzeng) ? $vente_nzeng_a_date : $vente_nzeng;
+		$stats["test2"] = empty($vente_louis) ? $vente_louis_a_date : $vente_louis;
+		$stats["taux_marge"] = $taux_marge;
+		$stats["benefices"] = $benefices;
+		$stats["nbre_total_vendu"] = $nbre_total_vendu;
+		// $stats["montant_vente"] = $vendues_cartes;
+
+		return response()->json($stats);
+
 	}
 }

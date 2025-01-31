@@ -24,6 +24,7 @@ class CreditCard extends Model
 		"lot_id",
 		"status",
 		"price",
+		"buy",
 	];
 
 	protected $appends = ["card_number_fr", "status_fr", "expiration_per_centage", "price_fr"];
