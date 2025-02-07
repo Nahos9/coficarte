@@ -142,6 +142,7 @@ class SaleController extends Controller
 			},
 			beforeCreate: function ($requestData) use ($connectedUser) {
 				$requestData["seller_id"] = $connectedUser->id;
+				$requestData["agency_id"] = $connectedUser->agency_id;
 				$requestData["unlock_status"] = "locked";
 				$requestData["sale_price"] = CreditCard::find($requestData["credit_card_id"])->price;
 				return $requestData;

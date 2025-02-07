@@ -17,10 +17,14 @@ return new class extends Migration {
 			$table->string("number_id");
 			$table->enum("customer_type", ["business", "particular"]);
 			$table->string("customer_name");
+            $table->enum("type_piece", ["cni", "passport", "residence_certificate", "driving_licence","carte_sej"])->default('cni');
+			$table->string("number_piece")->unique();
+			$table->date("date_expiration");
 			$table->string("account_number")->nullable();
 			$table->foreignId("account_type_id")->constrained()->cascadeOnDelete();
 			$table->text("comment")->nullable();
 			$table->foreignId("seller_id")->constrained(table: "users", column: "id")->cascadeOnDelete();
+			$table->foreignId("agency_id")->constrained(table: "agencies", column: "id")->cascadeOnDelete();
 			$table->enum("unlock_status", ["locked", "unlocked"])->default("locked");
 			$table->decimal('sale_price');
 			$table->string("customer_phone_number");

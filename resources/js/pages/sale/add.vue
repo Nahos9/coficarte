@@ -17,6 +17,9 @@ const saleData = ref({
 	number_id: "8456",
 	customer_type: null,
 	customer_name: null,
+  type_piece : null,
+  number_piece:null,
+  date_expiration:null,
 	account_number: null,
 	account_type_id: null,
 	customer_phone_number: null,
@@ -30,12 +33,22 @@ const getResetSaleError = () => {
 		number_id: "",
 		customer_type: "",
 		customer_name: "",
-		account_number: "",
+    type_piece : "",
+    number_piece:"",
+    date_expiration:"",
 		account_type_id: "",
 		customer_phone_number: "",
     is_dotation: "",
 	};
 };
+
+const documentTypeList = [
+  { value: "cni", title: "Carte d'identité nationale" },
+  { value: "passport", title: "Passeport" },
+  { value: "residence_certificate", title: "Certificat de résidence" },
+  { value: "driving_licence", title: "Permis de conduire" },
+  { value: "carte_sej", title: "Carte de séjour" },
+];
 
 const saleError = ref(getResetSaleError());
 
@@ -52,6 +65,9 @@ const onSubmit = () => {
 					number_id: saleData.value.number_id,
 					customer_type: saleData.value.customer_type,
 					customer_name: saleData.value.customer_name,
+					type_piece: saleData.value.type_piece,
+					number_piece: saleData.value.number_piece,
+					date_expiration: saleData.value.date_expiration,
 					account_number: saleData.value.account_number,
 					account_type_id: saleData.value.account_type_id,
 					customer_phone_number: saleData.value.customer_phone_number,
@@ -148,6 +164,35 @@ const snackbarCollor = ref("success");
 											<AppTextField v-model="saleData.customer_name" :error-messages="saleError.customer_name
 												" label="Nom du client" placeholder="Ex: John" :rules="[requiredValidator]" />
 										</VCol>
+                    <VCol cols="12">
+                      <AppSelect
+                        v-model="
+                          saleData.type_piece
+                        "
+                        :items="documentTypeList"
+                        :error-messages="
+                          saleError.type_piece
+                        "
+                        label="Type de la pièce d'identité"
+                        :rules="[requiredValidator]"
+                      />
+                  </VCol>
+                    <VCol cols="12">
+											<AppTextField v-model="saleData.number_piece" :error-messages="saleError.number_piece
+												" label="Numéro de la pièce" placeholder="Ex: GA2456TA" :rules="[requiredValidator]" />
+										</VCol>
+                    <VCol cols="12">
+                    <AppDateTimePicker
+                      v-model="
+                        saleData.date_expiration
+                      "
+                      :error-messages="
+                        saleError.date_expiration
+                      "
+                      label="Date de validité de la pièce d'identité"
+                      :rules="[requiredValidator]"
+                    />
+                </VCol> 
 										<VCol cols="12" md="12" lg="12">
 											<AppTextField v-model="saleData.account_number" type="number"
 												:error-messages="saleError.account_number

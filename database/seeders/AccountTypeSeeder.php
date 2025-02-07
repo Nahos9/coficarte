@@ -13,7 +13,7 @@ class AccountTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach(["Pack Maestro", "Pack à la carte",	"Pack VIP", "Pack WASSA", "Pack PRO", "Pack BUSINESS", "Pack BUSINESS GOLD"] as $name){
+        foreach(["Pack Maestro", "Pack à la carte",	"Pack VIP", "Pack PRO", "Pack BUSINESS", "Pack BUSINESS GOLD"] as $name){
 			AccountType::factory(1)->create(["name" => $name]);
 		}
     }
