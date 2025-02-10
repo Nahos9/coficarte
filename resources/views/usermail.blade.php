@@ -4,11 +4,13 @@
 
 </head>
 <body>
-    <h3>IDENTIFIANT DE CONNEXION COFI CARTE</h3>
-    <p>Bonjour  {{$user['name']}}</p>
-    <p>Merci de recevoir les identifiants de connexion a l'application ARRETES DE CAISSE <br />
-    <p>IDENTIFIANT : {{$user['email']}}</p>
-    <p>PASSWORD : {{$user['password']}}</p> <br />
+<h3>Bonjour {{ $user['name'] }},</h3>
+<p>Vos identifiants pour l'application COFI CARTE :</p>
+<ul>
+    <li>Email : <strong>{{ $user['login'] }}</strong></li>
+    <li>Mot de passe temporaire : <strong>{{ $user['password'] }}</strong></li>
+</ul>
+<p>Merci de changer votre mot de passe dès votre première connexion.</p>
     <a href="https://coficartega.cofinaonline.com/"> Clique ici pour accéder à l'application<a></p>
     <p>Cordialement</p>
 </body>

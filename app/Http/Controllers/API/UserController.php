@@ -141,13 +141,13 @@ class UserController extends Controller
 					}
 				}
 				// dd($requestData);
-				// $user = [
-				// 	"subject" => "IDENTIFIANTS DE CONNEXION APPLICATION COFI CARTE",
-				// 	"name" => $requestData["name"],
-				// 	"login" => $requestData["email"],
-				// 	"password" => "P@sse123"
-				// ];
-				// \Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
+				$user = [
+					"subject" => "IDENTIFIANTS DE CONNEXION APPLICATION COFI CARTE",
+					"name" => $requestData["name"],
+					"login" => $requestData["email"],
+					"password" => "P@sse123"
+				];
+				\Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
 				return $requestData;
 			}
 		);

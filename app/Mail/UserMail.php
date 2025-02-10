@@ -40,7 +40,7 @@ class UserMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'views.usermail',
+            view: 'usermail',
         );
     }
 
