@@ -22,8 +22,9 @@ const chartCanvas2 = ref(null)
 const chartCanvas3 = ref(null)
 const chartCanvas4 = ref(null)
 const chartCanvas5 = ref(null)
+const chartCanvas6 = ref(null)
 
-const chartCanvasAgence = ref(null)
+
 
 let chart = null 
 let chart1 = null; // Pour stocker l'instance du graphique 1
@@ -31,7 +32,8 @@ let chart2 = null;// Pour stocker l'instance du graphique
 let chart3 = null;// Pour stocker l'instance du graphique
 let chart4 = null;// Pour stocker l'instance du graphique
 let chart5 = null;// Pour stocker l'instance du graphique
-let chartAgence = null;// Pour stocker l'instance du graphique
+let chart6 = null;// Pour stocker l'instance du graphique
+
 const startDate = ref(null)
 const endDate = ref(null)
 const filterOptions = ['Jour', 'Semaine', 'Mois', 'Année']
@@ -44,8 +46,7 @@ const statistiqueNzeng = computed(() => stats.value.test1 || [])
 const statistiqueLouis = computed(() => stats.value.test2 || [])
 const stock = computed(()=>stats.value.stock)
 
-const total_stock_initial = computed(()=>stats.value.total_stock_initial)
-const vendues = computed(()=>stats.value.sales)
+
 
 const montant = computed(() =>parseInt(stats.value.montant_vendu_carte));
 
@@ -64,6 +65,17 @@ stockAgence = computed(() => stats.value.stok_agence)
 cartesVendueAgence = computed(() => stats.value.cartes_vendu_agence)
 montantVenduAgence = computed(() => stats.value.montant_vendu_agence)
 ventesAgence = computed(()=> stats.value.ventes_agences || [])
+console.log(object);
+}
+let stockStaff
+let cartesVenduesStaff
+let montantVenduStaff
+let venteStaff
+if(userRole == 'caf' || userRole == 'responsible_for_customer'){
+  stockStaff = computed(()=>stats.value.stok_staff)
+  cartesVenduesStaff = computed(()=>stats.value.cartes_vendu_staff)
+  montantVenduStaff = computed(()=>stats.value.montant_vendu_staff)
+  venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
 function getStats() {
   axios.get('http://localhost:8000/api/stats', {
@@ -303,12 +315,13 @@ if(userRole == 'marketing_manager'){
 });
 }
  
-function getWeekNumber(d) {
-      const oneJan = new Date(d.getFullYear(), 0, 1);
-      const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
-      return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
-    }
-    function groupByPeriod(statistiqueLouis, filter) {
+if(userRole == 'agency_head'){
+  function getWeekNumber(d) {
+        const oneJan = new Date(d.getFullYear(), 0, 1);
+        const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+        return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+      }
+  function groupByPeriod(statistiqueLouis, filter) {
         const groupedData = {};
 
         statistiqueLouis.forEach(stat => {
@@ -378,6 +391,87 @@ if (chart5) {
         },
     },
 });
+
+}
+
+if(userRole == 'caf' || userRole == 'responsible_for_customer'){
+
+  function getWeekNumber1(d) {
+        const oneJan = new Date(d.getFullYear(), 0, 1);
+        const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+        return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+      }
+  function groupByPeriod1(data, filter) {
+        const groupedData = {};
+
+        data.forEach(stat => {
+            if (!stat.sale_date || !stat.mt_vendue) return;
+
+            const saleDate = new Date(stat.sale_date);
+            let key = "";
+
+            switch (filter) {
+                case 'Jour':
+                    key = saleDate.toLocaleDateString('fr-FR'); // Format français
+                    break;
+                case 'Semaine':
+                    key = `Semaine ${getWeekNumber1(saleDate)}`;
+                    break;
+                case 'Mois':
+                    key = saleDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+                    break;
+                case 'Année':
+                    key = saleDate.getFullYear().toString();
+                    break;
+            }
+
+            // Cumule les montants vendus
+            const montant = parseFloat(stat.mt_vendue) || 0;
+            if (!groupedData[key]) {
+                groupedData[key] = 0;
+            }
+            groupedData[key] += montant;
+        });
+
+        return groupedData;
+    }
+    const groupedStats = groupByPeriod1(venteStaff.value, filter.value);
+    const labels = Object.keys(groupedStats);
+    const values = Object.values(groupedStats);
+    const ctx6 = chartCanvas6.value.getContext('2d')
+
+if (chart6) {
+    chart6.destroy()
+    chart6 = null
+
+  }
+
+  chart6 = new Chart(ctx6, {
+    type: 'line',
+    data: {
+        labels: labels, // Labels uniques (Jour, Semaine, Mois, Année)
+        datasets: [
+            {
+                label: "Representation des ventes",
+                data: values, // Montants cumulés
+                backgroundColor: '#3498db',
+                borderColor: '#3498db',
+                borderWidth: 2,
+                fill: false,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+            },
+        },
+    },
+});
+}
 
 }
 
@@ -470,8 +564,8 @@ watch(filter, (newValue) => {
               {{ stockAgence }}
              </p>
           </div>
-        </VCol>
-        <VCol cols="4" class="">
+      </VCol>
+      <VCol cols="4" class="">
           <div class="border-sm py-3 px-1" style="border-color: red!important;">
              <p>Cartes vendues</p>
              <p class="text-end text-lg">
@@ -489,9 +583,41 @@ watch(filter, (newValue) => {
         </VCol>
         <VCol cols="10">
           <VCol cols="4" v-if="userRole == 'agency_head' ">
-      <VSelect v-model="filter" :items="filterOptions" label="Filtrer par" @change="getStats" />
-    </VCol>
-      <canvas ref="chartCanvas5"></canvas>
+            <VSelect v-model="filter" :items="filterOptions" label="Filtrer par" @change="getStats" />
+          </VCol>
+            <canvas ref="chartCanvas5"></canvas>
+      </VCol>
+   </VRow>
+    <VRow v-if="userRole == 'caf' || userRole == 'responsible_for_customer'" >
+          <VCol cols="4" class="">
+              <div class="border-sm py-3 px-1" style="border-color: red!important;">
+                <p>Stock</p>
+                <p class="text-end text-lg">
+                  {{ stockStaff }}
+                </p>
+              </div>
+            </VCol>
+            <VCol cols="4" class="">
+              <div class="border-sm py-3 px-1" style="border-color: red!important;">
+                <p>Cartes vendues</p>
+                <p class="text-end text-lg">
+                  {{ cartesVenduesStaff }}
+                </p>
+              </div>
+            </VCol>
+            <VCol cols="4" class="">
+              <div class="border-sm py-3 px-1" style="border-color: red!important;">
+                <p>Montant carte vendu</p>
+                <p class="text-end text-lg">
+                  {{ montantVenduStaff }}
+                </p>
+              </div>
+            </VCol>
+            <VCol cols="10">
+          <VCol cols="4">
+            <VSelect v-model="filter" :items="filterOptions" label="Filtrer par" @change="getStats" />
+          </VCol>
+            <canvas ref="chartCanvas6"></canvas>
       </VCol>
     </VRow>
     <VRow cols="12" class="w-100 mb-3" v-if="userRole == 'marketing_manager'">

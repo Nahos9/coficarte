@@ -21,7 +21,7 @@ return new class extends Migration {
 			$table->string("number_piece")->unique();
 			$table->date("date_expiration");
 			$table->string("account_number")->nullable();
-			$table->foreignId("account_type_id")->constrained()->cascadeOnDelete();
+			$table->foreignId("account_type_id")->nullable()->constrained()->cascadeOnDelete();
 			$table->text("comment")->nullable();
 			$table->foreignId("seller_id")->constrained(table: "users", column: "id")->cascadeOnDelete();
 			$table->foreignId("agency_id")->constrained(table: "agencies", column: "id")->cascadeOnDelete();

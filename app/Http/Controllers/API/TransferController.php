@@ -113,7 +113,7 @@ class TransferController extends Controller
 		$transferProfilChecker = [
 			"admin" => ["marketing_manager" => false, "agency_head" => false, "responsible_for_customer" => false],
 			"marketing_manager" => ["agency_head" => false],
-			"agency_head" => ["responsible_for_customer" => true, "marketing_manager" => false],
+			"agency_head" => ["responsible_for_customer" => true, "caf"=>true, "marketing_manager" => false],
 			"responsible_for_customer" => ["agency_head" => true],
 			"audit_controller" => []
 		];

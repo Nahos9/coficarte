@@ -78,7 +78,7 @@ class CreditCard extends Model
 	{
 		return [
 			"returned" => "Retournée",
-			"owned" => ['responsible_for_customer' => 'En vente', 'marketing_manager' => 'Au siège', 'agency_head' => 'En agence', 'admin' => 'Chez les IT'][$this->possessor->profile],
+			"owned" => ['responsible_for_customer' => 'En vente', 'marketing_manager' => 'Au siège', 'agency_head' => 'En agence', 'admin' => 'Chez les IT','caf'=>'En agence'][$this->possessor->profile],
 			"sold" => "Vendu",
 		][$this->status];
 	}

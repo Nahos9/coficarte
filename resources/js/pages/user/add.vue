@@ -151,7 +151,7 @@ const isPasswordVisible = ref(false)
 								</VCol>
 								<VCol cols="12" md="12" lg="6">
 									<AppSelect v-model="userData.profile"
-										:items="[{ 'name': 'Administrateur', 'id': 'admin' }, { 'name': 'Chargé de clientèle', 'id': 'responsible_for_customer' }, { 'name': 'Responsable marketing', 'id': 'marketing_manager' }, { 'name': 'Chef d\'agence', 'id': 'agency_head' }, { 'name': 'Controlleur interne', 'id': 'audit_controller' }]"
+										:items="[{ 'name': 'Administrateur', 'id': 'admin' }, { 'name': 'Chargé de clientèle', 'id': 'responsible_for_customer' }, { 'name': 'Responsable marketing', 'id': 'marketing_manager' }, { 'name': 'Chef d\'agence', 'id': 'agency_head' }, { 'name': 'Controlleur interne', 'id': 'audit_controller' },{ 'name': 'Chargé d\'affaires', 'id': 'caf' },{ 'name': 'Operations', 'id': 'ops' }]"
 										:error-messages="userError.profile" label="Profile" item-title="name"
 										item-value="id" required />
 								</VCol>

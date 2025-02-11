@@ -44,7 +44,7 @@ class UserController extends Controller
 			$list = $this->queryRelationAdd($list, $requestData, "User");
 			$list = $this->queryRelationFilter($list, $requestData, "relation_filter_in_", "in");
 			$list = $this->queryRelationFilter($list, $requestData, "relation_filter_not_in_", "notIn");
-			$list = $this->queryMultipeValvueFilter($list, $requestData, ["profile" => ["a" => "admin", "rc" => "responsible_for_customer", "mm" => "marketing_manager", "ah" => "agency_head", "ac" => "audit_controller"]]);
+			$list = $this->queryMultipeValvueFilter($list, $requestData, ["profile" => ["a" => "admin", "rc" => "responsible_for_customer", "mm" => "marketing_manager", "ah" => "agency_head", "ac" => "audit_controller","c"=>"caf"]]);
 			$connectedUser = $request->user();
 			$connectedUser->profile == "audit_controller" ? $list->where('profile', '!=', 'admin') : null;
 			// $connectedUser->profile == "marketing_manager" ? $list->where(function ($query) use ($connectedUser) {
@@ -57,6 +57,11 @@ class UserController extends Controller
 					->orWhere(
 						function ($query) use ($connectedUser) {
 							$query->where('profile', 'responsible_for_customer')->where('agency_id', $connectedUser->agency_id);
+						}
+					)
+					->orWhere(
+						function ($query) use ($connectedUser) {
+							$query->where('profile', 'caf')->where('agency_id', $connectedUser->agency_id);
 						}
 					)
 				;
@@ -127,7 +132,7 @@ class UserController extends Controller
 				"name" => "required|unique:users,name",
 				"email" => "required|unique:users,email",
 				"password" => "required|min:8",
-				"profile" => "required|in:admin,responsible_for_customer,marketing_manager,agency_head,audit_controller",
+				"profile" => "required|in:admin,responsible_for_customer,marketing_manager,agency_head,audit_controller,caf,ops",
 				"activated" => "required|boolean",
 				"password_change_required" => "required|boolean",
 				"agency_id" => "required|exists:agencies,id",
@@ -147,7 +152,7 @@ class UserController extends Controller
 					"login" => $requestData["email"],
 					"password" => "P@sse123"
 				];
-				\Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
+				// \Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
 				return $requestData;
 			}
 		);

@@ -227,15 +227,15 @@ class CreditCardController extends Controller
 
 		// dd($userProfil);
 		if($userProfil == "agency_head" ||$userProfil == "responsible_for_customer"){
-		$cartes_de_agence_avant_date = DB::table('credit_cards')
-			->join('users', 'credit_cards.possessor_id', '=', 'users.id')
-			->join('agencies', 'users.agency_id', '=', 'agencies.id')
-			->where('credit_cards.delivery_date', '<=', $end_date)
-			->where('credit_cards.status', 'owned')
-			->where('agencies.id', $connectedUser->agency_id) // Ajout de cette condition
-			->select(DB::raw('count(*) as total'))
-			->get();
-		$cartes_de_agence = DB::select("SELECT COUNT(*) total
+			$cartes_de_agence_avant_date = DB::table('credit_cards')
+				->join('users', 'credit_cards.possessor_id', '=', 'users.id')
+				->join('agencies', 'users.agency_id', '=', 'agencies.id')
+				->where('credit_cards.delivery_date', '<=', $end_date)
+				->where('credit_cards.status', 'owned')
+				->where('agencies.id', $connectedUser->agency_id) // Ajout de cette condition
+				->select(DB::raw('count(*) as total'))
+				->get();
+			$cartes_de_agence = DB::select("SELECT COUNT(*) total
 			FROM credit_cards cc 
 			JOIN users u ON u.id = cc.possessor_id
 			JOIN agencies a ON a.id = u.agency_id
@@ -258,7 +258,7 @@ class CreditCardController extends Controller
 			WHERE s.unlock_status = 'unlocked'
 			AND s.sale_date BETWEEN ? AND ?
 			GROUP BY a.name",[$start_date,$end_date]);
-		// dd($cartes_de_agence);
+			// dd($cartes_de_agence);
 
 			$nbr_carte_vendu_agence_a_date = DB::select("SELECT a.name as agence, COUNT(*) as total 
 			FROM users u
@@ -316,6 +316,104 @@ class CreditCardController extends Controller
 			// dd($vente_agence_a_date);
 		}
 
+	if($userProfil == "responsible_for_customer" || $userProfil == "caf"){
+		$cartes_staff_avant_date = DB::table('credit_cards')
+				->join('users', 'credit_cards.possessor_id', '=', 'users.id')
+				->join('agencies', 'users.agency_id', '=', 'agencies.id')
+				->where('credit_cards.delivery_date', '<=', $end_date)
+				->where('credit_cards.status', 'owned')
+				->where('agencies.id', $connectedUser->agency_id)
+				->where('credit_cards.possessor_id',$connectedUser->id) // Ajout de cette condition
+				->select(DB::raw('count(*) as total'))
+				->get();
+		
+		$cartes_de_staff = DB::select("SELECT COUNT(*) total
+			FROM credit_cards cc 
+			JOIN users u ON u.id = cc.possessor_id
+			JOIN agencies a ON a.id = u.agency_id
+			WHERE a.id = $connectedUser->agency_id
+			AND cc.possessor_id = $connectedUser->id
+			AND cc.delivery_date BETWEEN ? AND ? 
+			",[$start_date,$end_date]);
+
+		$Vente_montant_staff_a_date = DB::select("SELECT a.name as agence, SUM(s.sale_price) as montant 
+		FROM users u
+		JOIN sales s ON u.id = s.seller_id
+		JOIN agencies a ON a.id = $connectedUser->agency_id
+		WHERE s.unlock_status = 'unlocked'
+		AND s.seller_id = $connectedUser->id
+		AND s.sale_date <= '$end_date'
+		GROUP BY a.name
+		");
+		
+		$Vente_montant_staff = DB::select("SELECT a.name as agence, SUM(s.sale_price) as montant FROM users u
+		JOIN sales s ON u.id = s.seller_id
+		JOIN agencies a ON a.id =  $connectedUser->agency_id
+		WHERE s.unlock_status = 'unlocked'
+		AND s.seller_id = $connectedUser->id
+		AND s.sale_date BETWEEN ? AND ?
+		GROUP BY a.name",[$start_date,$end_date]);
+
+		$nbr_carte_vendu_staff_a_date = DB::select("SELECT a.name as agence, COUNT(*) as total 
+			FROM users u
+			JOIN sales s ON u.id = s.seller_id
+			JOIN agencies a ON a.id = $connectedUser->agency_id
+			WHERE s.unlock_status = 'unlocked'
+			AND s.agency_id = $connectedUser->agency_id
+			AND s.seller_id = $connectedUser->id
+			AND s.sale_date <= '$end_date'
+			GROUP BY a.name
+			");
+			// dd($nbr_carte_vendu_agence_a_date);
+
+		$nbr_carte_vendu_staff = DB::select("SELECT a.name as agence, COUNT(*) as total 
+			FROM users u
+			JOIN sales s ON u.id = s.seller_id
+			JOIN agencies a ON a.id =  $connectedUser->agency_id
+			WHERE s.unlock_status = 'unlocked'
+			AND s.agency_id = $connectedUser->agency_id
+			AND s.seller_id = $connectedUser->id
+			AND s.sale_date BETWEEN ? AND ?
+			GROUP BY a.name",[$start_date,$end_date]);
+		
+		$vente_staff = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m-%d') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+				FROM sales 
+				INNER JOIN users ON sales.seller_id = users.id 
+				INNER JOIN agencies ON agencies.id = users.agency_id
+				-- WHERE users.name = '$connectedUser->name'
+				WHERE agencies.id = '$connectedUser->agency_id'
+				AND sales.seller_id = '$connectedUser->id'
+				AND sales.sale_date <= '$end_date'
+				GROUP BY month, agencies.name,users.name,sales.sale_date
+				ORDER BY month ASC"
+		);
+		$vente_staff_a_date = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m-%d') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+				FROM sales 
+				INNER JOIN users ON sales.seller_id = users.id 
+				INNER JOIN agencies ON agencies.id = users.agency_id
+				-- WHERE users.name = '$connectedUser->name'
+				WHERE agencies.id = '$connectedUser->agency_id'
+				AND sales.seller_id = '$connectedUser->id'
+				AND sales.sale_date BETWEEN ? AND ?
+				GROUP BY month, agencies.name,users.name,sales.sale_date
+				ORDER BY month ASC"
+		,[$start_date,$end_date]);
+
+		// dd($vente_staff_a_date,$vente_staff);
+		
+	}
 		$stats = [];
 		
 
@@ -509,22 +607,39 @@ class CreditCardController extends Controller
 		$stats["benefices"] = $benefices;
 		$stats["nbre_total_vendu"] = $nbre_total_vendu;
 		// dd($nbr_carte_vendu_agence);
-		if($userProfil == "agency_head" ||$userProfil == "responsible_for_customer"){
-		$stats["stok_agence"] = ($cartes_de_agence[0]->total == 0) ? $cartes_de_agence_avant_date[0]->total:$cartes_de_agence[0]->total;
-		// $stats["cartes_vendu_agence"] = empty($nbr_carte_vendu_agence) ? $nbr_carte_vendu_agence_a_date[0]->total :$nbr_carte_vendu_agence[0]->total;
-		$stats["cartes_vendu_agence"] = !empty($nbr_carte_vendu_agence) && isset($nbr_carte_vendu_agence[0]) 
-		? $nbr_carte_vendu_agence[0]->total 
-		: (!empty($nbr_carte_vendu_agence_a_date) && isset($nbr_carte_vendu_agence_a_date[0]) 
-			? $nbr_carte_vendu_agence_a_date[0]->total 
-			: 0);
+		if($userProfil == "agency_head"){
+			$stats["stok_agence"] = ($cartes_de_agence[0]->total == 0) ? $cartes_de_agence_avant_date[0]->total:$cartes_de_agence[0]->total;
+			// $stats["cartes_vendu_agence"] = empty($nbr_carte_vendu_agence) ? $nbr_carte_vendu_agence_a_date[0]->total :$nbr_carte_vendu_agence[0]->total;
+			$stats["cartes_vendu_agence"] = !empty($nbr_carte_vendu_agence) && isset($nbr_carte_vendu_agence[0]) 
+			? $nbr_carte_vendu_agence[0]->total 
+			: (!empty($nbr_carte_vendu_agence_a_date) && isset($nbr_carte_vendu_agence_a_date[0]) 
+				? $nbr_carte_vendu_agence_a_date[0]->total 
+				: 0);
 
-		// $stats["montant_vendu_agence"] = empty($nbr_carte_vendu_agence) ? $nbr_carte_vendu_agence_a_date[0]->total * 11900 : $nbr_carte_vendu_agence[0]->total * 11900;
-		$stats["montant_vendu_agence"] = !empty($nbr_carte_vendu_agence) && isset($nbr_carte_vendu_agence[0]) 
-		? $nbr_carte_vendu_agence[0]->total * 11900
-		: (!empty($nbr_carte_vendu_agence_a_date) && isset($nbr_carte_vendu_agence_a_date[0]) 
-			? $nbr_carte_vendu_agence_a_date[0]->total *11900
-			: 0);
-		$stats["ventes_agences"] = empty($vente_agence) ?  $vente_agence_a_date : $vente_agence;
+			// $stats["montant_vendu_agence"] = empty($nbr_carte_vendu_agence) ? $nbr_carte_vendu_agence_a_date[0]->total * 11900 : $nbr_carte_vendu_agence[0]->total * 11900;
+			$stats["montant_vendu_agence"] = !empty($nbr_carte_vendu_agence) && isset($nbr_carte_vendu_agence[0]) 
+			? $nbr_carte_vendu_agence[0]->total * 11900
+			: (!empty($nbr_carte_vendu_agence_a_date) && isset($nbr_carte_vendu_agence_a_date[0]) 
+				? $nbr_carte_vendu_agence_a_date[0]->total *11900
+				: 0);
+			$stats["ventes_agences"] = empty($vente_agence) ?  $vente_agence_a_date : $vente_agence;
+		}
+		if($userProfil == "caf" ||$userProfil == "responsible_for_customer"){
+			$stats["stok_staff"] = ($cartes_de_staff[0]->total == 0) ? $cartes_staff_avant_date[0]->total:$cartes_de_staff[0]->total;
+			// $stats["cartes_vendu_agence"] = empty($nbr_carte_vendu_agence) ? $nbr_carte_vendu_agence_a_date[0]->total :$nbr_carte_vendu_agence[0]->total;
+			$stats["cartes_vendu_staff"] = !empty($nbr_carte_vendu_staff) && isset($nbr_carte_vendu_staff[0]) 
+			? $nbr_carte_vendu_staff[0]->total 
+			: (!empty($nbr_carte_vendu_staff_a_date) && isset($nbr_carte_vendu_staff_a_date[0]) 
+				? $nbr_carte_vendu_staff_a_date[0]->total 
+				: 0);
+
+			// $stats["montant_vendu_agence"] = empty($nbr_carte_vendu_agence) ? $nbr_carte_vendu_agence_a_date[0]->total * 11900 : $nbr_carte_vendu_agence[0]->total * 11900;
+			$stats["montant_vendu_staff"] = !empty($nbr_carte_vendu_staff) && isset($nbr_carte_vendu_staff[0]) 
+			? $nbr_carte_vendu_staff[0]->total * 11900
+			: (!empty($nbr_carte_vendu_staff_a_date) && isset($nbr_carte_vendu_staff_a_date[0]) 
+				? $nbr_carte_vendu_staff_a_date[0]->total *11900
+				: 0);
+			$stats["ventes_staff"] = empty($vente_staff) ?  $vente_staff_a_date : $vente_staff;
 		}
 
 		return response()->json($stats);

@@ -179,6 +179,37 @@ class User extends Authenticatable
             'subject' => ['user']
           ],
         ];
+        case ('caf'):
+          return [
+            [
+              'action' => ['read'],
+              'subject' => ['agency', 'user', 'credit-card', 'transfer', 'settings-user', 'account-type', 'sale']
+            ],
+            [
+              'action' => ['read'],
+              'subject' => ['dashboard']
+            ],
+            [
+              'action' => ['update', 'trate', 'cancel', 'reject', 'validate'],
+              'subject' => ['transfer']
+            ],
+            [
+              'action' => ['create'],
+              'subject' => ['sale', 'transfer']
+            ],
+            [
+              'action' => ['historical'],
+              'subject' => ['transfer', 'credit-card']
+            ],
+            [
+              'action' => ['update'],
+              'subject' => ['sale']
+            ],
+            [
+              'action' => ['update-password'],
+              'subject' => ['user']
+            ],
+          ];
     }
   }
 
@@ -219,7 +250,9 @@ class User extends Authenticatable
       'responsible_for_customer' => 'Chargé de clientèle',
       'marketing_manager' => 'Responsable Marketing',
       'agency_head' => 'Chef d\'agence',
-      'audit_controller' => "Contrôleur permanent"
+      'audit_controller' => "Contrôleur permanent",
+      'caf'=>"Chargé d'affaires",
+      'ops'=>"Operations"
     ][$this->profile];
   }
 

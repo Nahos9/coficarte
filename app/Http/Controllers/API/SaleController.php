@@ -128,7 +128,7 @@ class SaleController extends Controller
 				"customer_type" => "required|in:business,particular",
 				"customer_name" => "required|min:2",
 				"account_number" => "nullable|min_digits:12",
-				"account_type_id" => "required|exists:account_types,id",
+				// "account_type_id" => "required|exists:account_types,id",
 				"customer_phone_number" => "required|min:2",
 				"is_dotation" => "nullable|boolean"
 			],

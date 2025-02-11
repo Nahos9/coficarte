@@ -20,7 +20,10 @@ export const redirects = [
 
 			if (userRole === 'agency_head')
 				return { name: 'dashboard' }
-
+			if (userRole === 'caf')
+				return { name: 'dashboard' }
+			if (userRole === 'ops')
+				return { name: 'dashboard' }
 			if (userRole === 'audit_controller')
 				return { name: 'transfer' }
 

@@ -201,7 +201,9 @@ const snackbarCollor = ref("success");
 										<VCol cols="12" md="12" lg="12">
 											<AppTextField v-model="saleData.customer_phone_number"
 												:error-messages="saleError.customer_phone_number
-													" label="Numéro de téléphone du client" placeholder="Ex: +241 77 56 76 00" />
+													"
+                        :rules="[requiredValidator]"
+                        label="Numéro de téléphone du client" placeholder="Ex: +241 77 56 76 00" />
 										</VCol>
                     <VCol cols="12" md="12" lg="12">
                       <VCheckbox v-model="saleData.is_dotation" :error-messages="saleError.is_dotation" label="Dotation" />
@@ -209,7 +211,7 @@ const snackbarCollor = ref("success");
                     <VCol cols="12" md="12" lg="12">
 											<AppAutocomplete v-model="saleData.account_type_id" :items="accountTypeList"
 												:error-messages="saleError.account_type_id" label="Type de compte"
-												item-title="name" item-value="id" :rules="[requiredValidator]" />
+												item-title="name" item-value="id" />
 										</VCol>
 									</VRow>
 								</VCol>

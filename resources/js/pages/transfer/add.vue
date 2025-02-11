@@ -73,7 +73,7 @@ const {
 } = await useApi(createUrl(`/user`, {
 	query: {
 		"paginate": 'false',
-		"multi_profile": { 'marketing_manager': "ah", "agency_head": "rc-mm", "responsible_for_customer": "ah" }[connectedUser.role]
+		"multi_profile": { 'marketing_manager': "ah", "agency_head": "rc-mm-c", "responsible_for_customer": "ah-c" }[connectedUser.role]
 	},
 }))
 const receiverList = computed(() => receiverListData.value.data)
@@ -111,7 +111,7 @@ const snackbarCollor = ref("success")
 			<VRow>
 				<VCol md="12">
 					<!-- 👉 PV Information -->
-					<VCard class="mb-6" title="Information du pv">
+					<VCard class="mb-6" title="Information du transfère">
 						<VCardText>
 							<VRow>
 								<VCol cols="12" md="12" lg="12">

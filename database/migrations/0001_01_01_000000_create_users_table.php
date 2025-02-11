@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('profile', ['admin', 'responsible_for_customer', 'marketing_manager', 'agency_head', 'audit_controller']);
+            $table->enum('profile', ['admin', 'responsible_for_customer', 'marketing_manager', 'agency_head', 'audit_controller','caf','ops']);
             $table->boolean('activated')->default(false);
 			$table->boolean('password_change_required')->default(true);
 
