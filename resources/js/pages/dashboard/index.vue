@@ -102,7 +102,7 @@ function getStats() {
 function updateChart() {
 
 // Détruire les graphiques existants s'ils existent
-if(userRole == 'marketing_manager'){
+if(userRole == 'marketing_manager' || userRole == 'ops'){
   if (chart) {
     chart.destroy()
     chart = null
@@ -506,7 +506,7 @@ watch(filter, (newValue) => {
       <button @click="getStats"style="padding:4px;background: red; color:white;margin-top: 2rem; border-radius: 12px;" >Rechercher</button>
       </VCol>
     </VRow>
-    <VRow cols="12" class="mt-3 text-black" v-if="userRole == 'marketing_manager'">
+    <VRow cols="12" class="mt-3 text-black" v-if="userRole == 'marketing_manager'|| userRole == 'ops'">
         <VCol cols="3" class="">
           <div class="border-sm py-3 px-1" style="border-color: red!important;">
              <p>Stock</p>
@@ -620,7 +620,7 @@ watch(filter, (newValue) => {
             <canvas ref="chartCanvas6"></canvas>
       </VCol>
     </VRow>
-    <VRow cols="12" class="w-100 mb-3" v-if="userRole == 'marketing_manager'">
+    <VRow cols="12" class="w-100 mb-3" v-if="userRole == 'marketing_manager' || userRole == 'ops'">
       <VCol cols="6">
       <canvas ref="chartCanvas"></canvas>
     </VCol>
@@ -628,10 +628,10 @@ watch(filter, (newValue) => {
       <canvas ref="chartCanvas1"></canvas>
     </VCol>
     </VRow>
-    <VCol cols="4" v-if="userRole == 'marketing_manager' ">
+    <VCol cols="4" v-if="userRole == 'marketing_manager' || userRole == 'ops'">
       <VSelect v-model="filter" :items="filterOptions" label="Filtrer par" @change="getStats" />
     </VCol>
-    <VRow cols="12"  v-if="userRole == 'marketing_manager'">
+    <VRow cols="12"  v-if="userRole == 'marketing_manager' || userRole == 'ops' ">
       <VCol cols="6">
       <canvas ref="chartCanvas2"></canvas>
       </VCol>

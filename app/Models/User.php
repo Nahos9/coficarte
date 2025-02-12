@@ -137,6 +137,25 @@ class User extends Authenticatable
             'subject' => ['credit-card']
           ],
         ];
+        case ('ops'):
+          return [
+            [
+              'action' => ['read'],
+              'subject' => ['agency', 'credit-card', 'transfer', 'settings-user', 'account-type', 'sale']
+            ],
+            [
+              'action' => ['read'],
+              'subject' => ['dashboard']
+            ],
+            [
+              'action' => ['historical'],
+              'subject' => ['transfer', 'credit-card']
+            ],
+            [
+              'action' => ['update-password'],
+              'subject' => ['user']
+            ]
+          ];
       case ('agency_head'):
         return [
           [

@@ -152,7 +152,7 @@ class UserController extends Controller
 					"login" => $requestData["email"],
 					"password" => "P@sse123"
 				];
-				// \Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
+				\Mail::to($requestData["email"])->send(new \App\Mail\UserMail($user));
 				return $requestData;
 			}
 		);
