@@ -454,7 +454,9 @@ class CreditCardController extends Controller
 			GROUP BY a.name",[$start_date,$end_date]);
 	
 		
-		$vent_bessieux_a_date = DB::select(
+	$agenceBessieux = Agency::where('name', 'Agence Bessieux')->first(['id']);
+	
+	$vent_bessieux_a_date = DB::select(
 			"SELECT 
 				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
 				SUM(sales.sale_price) as mt_vendue,
@@ -464,15 +466,16 @@ class CreditCardController extends Controller
 			FROM sales 
 			INNER JOIN users ON sales.seller_id = users.id 
 			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE users.name = 'Sonia Akome'
+			WHERE sales.agency_id = $agenceBessieux->id
 			AND sales.sale_date <= '$end_date'
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC"
 		,);
 	// dd($vent_bessieux_a_date);
-		$vent_bessieux = DB::select('
+
+		$vent_bessieux = DB::select("
 			SELECT 
-				DATE_FORMAT(sales.sale_date, "%Y-%m") as month, 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
 				SUM(sales.sale_price) as mt_vendue,
 				agencies.name as agence_name,
 				users.name as cassiere_name,
@@ -480,11 +483,14 @@ class CreditCardController extends Controller
 			FROM sales 
 			INNER JOIN users ON sales.seller_id = users.id 
 			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE users.name = "Sonia Akome"
+			WHERE sales.agency_id = $agenceBessieux->id
 			AND sales.sale_date BETWEEN ? AND ?
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC
-		', [$start_date, $end_date]);
+		", [$start_date, $end_date]);
+
+
+		$agenceNzeng = Agency::where('name', 'Agence Nzeng-Ayong')->first(['id']);
 	
 		$vente_nzeng_a_date = DB::select(
 			"SELECT 
@@ -496,15 +502,15 @@ class CreditCardController extends Controller
 			FROM sales 
 			INNER JOIN users ON sales.seller_id = users.id 
 			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE users.name = 'Kelly MAGANGHE'
+			WHERE sales.agency_id = $agenceNzeng->id
 			AND sales.sale_date <= '$end_date'
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC"
 		);
 
-		$vente_nzeng = DB::select('
-			SELECT 
-				DATE_FORMAT(sales.sale_date, "%Y-%m-%d") as month, 
+		$vente_nzeng = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m-%d') as month, 
 				SUM(sales.sale_price) as mt_vendue,
 				agencies.name as agence_name,
 				users.name as cassiere_name,
@@ -512,12 +518,13 @@ class CreditCardController extends Controller
 			FROM sales 
 			INNER JOIN users ON sales.seller_id = users.id 
 			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE users.name = "Kelly MAGANGHE"
+			WHERE sales.agency_id = $agenceNzeng->id
 			AND sales.sale_date BETWEEN ? AND ?
 			GROUP BY month, agencies.name,users.name,sales.sale_date
-			ORDER BY month ASC
-		', [$start_date, $end_date]);
+			ORDER BY month ASC"
+		, [$start_date, $end_date]);
 
+		$agenceLouis = Agency::where('name', 'Agence Louis')->first(['id']);
 		$vente_louis = DB::select(
 		"SELECT 
 			DATE_FORMAT(sales.sale_date, '%Y-%m-%d') as month, 
@@ -528,14 +535,16 @@ class CreditCardController extends Controller
 			FROM sales 
 			INNER JOIN users ON sales.seller_id = users.id 
 			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE users.name = 'Marlene ENANGA'
+			WHERE sales.agency_id = $agenceLouis->id
 			AND sales.sale_date <= '$end_date'
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC"
 	);
-		$vente_louis_a_date = DB::select('
+	// dd($vente_louis);
+
+		$vente_louis_a_date = DB::select("
 			SELECT 
-				DATE_FORMAT(sales.sale_date, "%Y-%m") as month, 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
 				SUM(sales.sale_price) as mt_vendue,
 				agencies.name as agence_name,
 				users.name as cassiere_name,
@@ -543,11 +552,11 @@ class CreditCardController extends Controller
 			FROM sales 
 			INNER JOIN users ON sales.seller_id = users.id 
 			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE users.name = "Marlene ENANGA"
+			WHERE sales.agency_id = $agenceLouis->id
 			AND sales.sale_date BETWEEN ? AND ?
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC
-		', [$start_date, $end_date]);
+		", [$start_date, $end_date]);
 	
 		
 		$sotk_a_date = CreditCard::where('delivery_date','<=',$end_date)->where('status','owned')->count();

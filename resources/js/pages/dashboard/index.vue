@@ -65,7 +65,7 @@ stockAgence = computed(() => stats.value.stok_agence)
 cartesVendueAgence = computed(() => stats.value.cartes_vendu_agence)
 montantVenduAgence = computed(() => stats.value.montant_vendu_agence)
 ventesAgence = computed(()=> stats.value.ventes_agences || [])
-console.log(object);
+// console.log(object);
 }
 let stockStaff
 let cartesVenduesStaff
@@ -103,6 +103,50 @@ function updateChart() {
 
 // Détruire les graphiques existants s'ils existent
 if(userRole == 'marketing_manager' || userRole == 'ops'){
+ 
+  function getWeekNumber1(d) {
+      const oneJan = new Date(d.getFullYear(), 0, 1);
+      const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+      return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+    }
+    function groupByPeriod1(statistiqueLouis, filter) {
+        const groupedData = {};
+
+        statistiqueLouis.forEach(stat => {
+            if (!stat.sale_date || !stat.mt_vendue) return;
+
+            const saleDate = new Date(stat.sale_date);
+            let key = "";
+
+            switch (filter) {
+                case 'Jour':
+                    key = saleDate.toLocaleDateString('fr-FR'); // Format français
+                    break;
+                case 'Semaine':
+                    key = `Semaine ${getWeekNumber1(saleDate)}`;
+                    break;
+                case 'Mois':
+                    key = saleDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+                    break;
+                case 'Année':
+                    key = saleDate.getFullYear().toString();
+                    break;
+            }
+
+            // Cumule les montants vendus
+            const montant = parseFloat(stat.mt_vendue) || 0;
+            if (!groupedData[key]) {
+                groupedData[key] = 0;
+            }
+            groupedData[key] += montant;
+        });
+
+        return groupedData;
+    }
+    const groupedStats1 = groupByPeriod1(statistiqueBessieux.value, filter.value);
+    const labels1 = Object.keys(groupedStats1);
+    const values1 = Object.values(groupedStats1);
+
   if (chart) {
     chart.destroy()
     chart = null
@@ -170,46 +214,75 @@ if(userRole == 'marketing_manager' || userRole == 'ops'){
     chart2.destroy()
     chart2 = null
   }
-  chart2 = new Chart(ctx2, {
+  
+    chart2 = new Chart(ctx2, {
     type: 'line',
     data: {
-      labels: statistiqueBessieux.value.map(stat => {
-        let label;
-        const [year, month] = stat.month.split('-');
-        switch (filter.value) {
-          case 'Jour':
-            label = new Date(stat.sale_date).toLocaleDateString();
-            break;
-          case 'Semaine':
-            label = `Semaine ${getWeekNumber(new Date(stat.sale_date))}`;
-            break;
-          case 'Mois':
-            label = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
-            break;
-          case 'Année':
-            label = year;
-            break;
-        }
-        return label;
-      }),
-      datasets: [
-        {
-          label: "Montant vendu par l'agence Bessieux",
-          data: statistiqueBessieux.value.map(stat => stat.mt_vendue),
-          backgroundColor: ['#3498db'],
-        },
-      ],
+        labels: labels1, // Labels uniques (Jour, Semaine, Mois, Année)
+        datasets: [
+            {
+                label: "Montant vendu par l'agence Bessieux",
+                data: values1, // Montants cumulés
+                backgroundColor: '#3498db',
+                borderColor: '#3498db',
+                borderWidth: 2,
+                fill: false,
+            },
+        ],
     },
     options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+            },
         },
-      },
     },
-  })
+});
+
+function getWeekNumber2(d) {
+      const oneJan = new Date(d.getFullYear(), 0, 1);
+      const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+      return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+    }
+    function groupByPeriod2(statistiqueLouis, filter) {
+        const groupedData = {};
+
+        statistiqueLouis.forEach(stat => {
+            if (!stat.sale_date || !stat.mt_vendue) return;
+
+            const saleDate = new Date(stat.sale_date);
+            let key = "";
+
+            switch (filter) {
+                case 'Jour':
+                    key = saleDate.toLocaleDateString('fr-FR'); // Format français
+                    break;
+                case 'Semaine':
+                    key = `Semaine ${getWeekNumber2(saleDate)}`;
+                    break;
+                case 'Mois':
+                    key = saleDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+                    break;
+                case 'Année':
+                    key = saleDate.getFullYear().toString();
+                    break;
+            }
+
+            // Cumule les montants vendus
+            const montant = parseFloat(stat.mt_vendue) || 0;
+            if (!groupedData[key]) {
+                groupedData[key] = 0;
+            }
+            groupedData[key] += montant;
+        });
+
+        return groupedData;
+    }
+    const groupedStats2 = groupByPeriod2(statistiqueNzeng.value, filter.value);
+    const labels2 = Object.keys(groupedStats2);
+    const values2 = Object.values(groupedStats2);
    if (chart3) {
     chart3.destroy()
     chart3 = null
@@ -217,28 +290,28 @@ if(userRole == 'marketing_manager' || userRole == 'ops'){
   chart3 = new Chart(ctx3, {
     type: 'line',
     data: {
-      labels: statistiqueNzeng.value.map(stat => {
-        const [year, month] = stat.month.split('-'); // Sépare "2025-01" en ["2025", "01"]
-        return new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
-      }),
-      datasets: [
-        {
-          label: "Montant vendu par l'agence Nzeng-Ayong",
-          data: statistiqueNzeng.value.map(stat => stat.mt_vendue),
-          backgroundColor: ['#eb3434'],
-        },
-      ],
+        labels: labels2, // Labels uniques (Jour, Semaine, Mois, Année)
+        datasets: [
+            {
+                label: "Montant vendu par l'agence Nzeng-Ayong",
+                data: values2, // Montants cumulés
+                backgroundColor: '#3498db',
+                borderColor: '#3498db',
+                borderWidth: 2,
+                fill: false,
+            },
+        ],
     },
     options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+            },
         },
-      },
     },
-  })
+});
   if (chart4) {
     chart4.destroy()
     chart4 = null
