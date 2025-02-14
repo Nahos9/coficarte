@@ -10,7 +10,7 @@ public/docs
 /public/storage
 /storage/*.key
 /vendor
-.env
+# .env
 .env.backup
 .env.production
 .phpunit.result.cache
