@@ -564,6 +564,7 @@ watch(filter, (newValue) => {
     <h3>Tableau de bord</h3>
     <!-- Aj{out d'un sélecteur pour la période -->
   <p class="text-sm text-end">Date du jour, {{ new Date().toLocaleString('default', {day:'2-digit', month: 'long', year: 'numeric' }) }}  </p>
+  <p>Merci</p>
     <VRow>
       <VCol cols="4">
         <AppDateTimePicker v-model="startDate" 
