@@ -78,7 +78,7 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
 function getStats() {
-  axios.get('http://localhost:80/api/stats', {
+  axios.get('http://localhost:8000/api/stats', {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
