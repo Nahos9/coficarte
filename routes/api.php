@@ -68,7 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	});
 
 	Route::apiResource('sales', SaleController::class);
-	Route::get('/stats',[CreditCardController::class,"statistiques"])->name("statistiques");
 	
+	Route::get('/stats',[CreditCardController::class,"statistiques"])->name("statistiques");
 });
 

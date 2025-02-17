@@ -226,6 +226,7 @@ class CreditCardController extends Controller
 		$userProfil = $connectedUser["profile"];
 
 		// dd($userProfil);
+
 		if($userProfil == "agency_head" ||$userProfil == "responsible_for_customer"){
 			$cartes_de_agence_avant_date = DB::table('credit_cards')
 				->join('users', 'credit_cards.possessor_id', '=', 'users.id')
