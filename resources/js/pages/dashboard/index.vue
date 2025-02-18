@@ -78,7 +78,7 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
 function getStats() {
-  axios.get('http://localhost:8000/api/stats', {
+  axios.get('https://localhost:8000/api/credit-card/stats', {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -561,7 +561,7 @@ watch(filter, (newValue) => {
 
 <template>
   <VCard class="pa-4">
-    <h3>Tableau de bord</h3>
+    <h3>Dashboard</h3>
     <!-- Aj{out d'un sélecteur pour la période -->
   <p class="text-sm text-end">Date du jour, {{ new Date().toLocaleString('default', {day:'2-digit', month: 'long', year: 'numeric' }) }}  </p>
   <p>Merci</p>

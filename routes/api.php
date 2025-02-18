@@ -12,6 +12,7 @@ use App\Models\CreditCard;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 Route::post('auth/login', [AuthController::class, "login"])->name("auth.login");
 Route::middleware('auth:sanctum')->group(function () {
 	Route::prefix("/auth")->name("auth.")->group(function () {
@@ -35,12 +36,14 @@ Route::middleware('auth:sanctum')->group(function () {
 	});
 	Route::prefix("credit-card")->name("credit-card.")->group(function () {
 		Route::get("/", [CreditCardController::class, "index"])->name("index");
+		Route::get("/stats",[CreditCardController::class,"statistiques"])->name("statistiques");
 		Route::get("/{id}", [CreditCardController::class, "show"])->name("show");
 		Route::post("/", [CreditCardController::class, "store"])->name("store");
 		Route::put("/update-price", [CreditCardController::class, "update_price"])->name("update-price");
 		Route::put("/{id}", [CreditCardController::class, "update"])->name("update");
 		Route::delete("/{id}", [CreditCardController::class, "destroy"])->name("destroy");
 		// Route::get('/stats',[CreditCardController::class,"statistiques"])->name("statistiques");
+
 	});
 	Route::prefix("transfer")->name("transfer.")->group(function () {
 		Route::get("/", [TransferController::class, "index"])->name("index");
@@ -68,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	});
 
 	Route::apiResource('sales', SaleController::class);
+	// Route::get('/stats',[CreditCardController::class,"statistiques"])->name("statistiques");
 	
-	Route::get('/stats',[CreditCardController::class,"statistiques"])->name("statistiques");
 });
 
