@@ -78,7 +78,7 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
 function getStats() {
-  axios.get('https://localhost:8000/api/credit-card/stats', {
+  axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
