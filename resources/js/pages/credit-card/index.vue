@@ -132,7 +132,7 @@ const token = useCookie('userToken').value;
 
 
 function handleReturn(){
-  axios.post("http://localhost:8000/api/credit-card/return-credit-card", {
+  axios.post("https://coficartega.cofinaonline.com/api/credit-card/return-credit-card", {
     possessor_id:possessorID.value,
     credit_card_id:selectedItemId.value,
     motif:motif.value,
@@ -148,7 +148,7 @@ function handleReturn(){
   }).catch(error=>console.log(error))
 }
 function apiValidate(){
-  axios.post("http://localhost:8000/api/credit-card/validate-return-credit-card",{
+  axios.post("https://coficartega.cofinaonline.com/api/credit-card/validate-return-credit-card",{
     credit_card_id:selectedItemId.value,
   },{
     headers:{

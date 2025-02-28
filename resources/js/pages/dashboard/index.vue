@@ -99,7 +99,7 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
 //     })
 // }
 function getStats() {
-  axios.get('http://localhost:8000/api/credit-card/stats', {
+  axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
