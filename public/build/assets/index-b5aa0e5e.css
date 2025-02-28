@@ -1,0 +1,1 @@
+.border-sm{border:1px solid;border-radius:8px}@keyframes borderFlash{0%{border-color:currentColor;opacity:1}50%{border-color:currentColor;opacity:.3}to{border-color:currentColor;opacity:1}}.border-flash{animation:borderFlash 1s ease-in-out infinite}

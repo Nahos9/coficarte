@@ -49,11 +49,13 @@ const stock = computed(()=>stats.value.stock)
 
 
 const montant = computed(() =>parseInt(stats.value.montant_vendu_carte));
+const montantAchat = computed(() =>parseInt(stats.value.montant_achat));
 
 const cartes_vendues = computed(() => stats.value.nbre_total_vendu)
 const cartes_vendues_hp = computed(() => stats.value.nrb_cartes_sale_hpack)
 const profit = computed(() => stats.value.benefices)
 const taux_marge = computed(() => stats.value.taux_marge)
+const nbreCarteAchat = computed(() => stats.value.nbre_carte_achat)
 
 //Profil chef d'agence
 let stockAgence;
@@ -77,8 +79,27 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   montantVenduStaff = computed(()=>stats.value.montant_vendu_staff)
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
+// function getStats() {
+//   axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
+//     headers: {
+//       'Authorization': `Bearer ${token}`,
+//     },
+//     params: { 
+//       start_date: startDate.value, 
+//       end_date: endDate.value,
+//       // filter: filter.value
+//     },
+//   })
+//     .then(response => {
+//       stats.value = response.data
+//       updateChart() // Mettre à jour le graphique une fois les données reçues
+//     })
+//     .catch(error => {
+//       console.error(error)
+//     })
+// }
 function getStats() {
-  axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
+  axios.get('http://localhost:8000/api/credit-card/stats', {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -564,7 +585,6 @@ watch(filter, (newValue) => {
     <h3>Dashboard</h3>
     <!-- Aj{out d'un sélecteur pour la période -->
   <p class="text-sm text-end">Date du jour, {{ new Date().toLocaleString('default', {day:'2-digit', month: 'long', year: 'numeric' }) }}  </p>
-  <p>Merci</p>
     <VRow>
       <VCol cols="4">
         <AppDateTimePicker v-model="startDate" 
@@ -626,6 +646,14 @@ watch(filter, (newValue) => {
              <p>Taux de marge</p>
              <p class="text-end text-lg">
               {{ taux_marge }} %
+             </p>
+          </div>
+      </VCol>
+      <VCol cols="3" v-if="montant >= montantAchat">
+        <div class="border-flash border-sm py-3 px-1" style="border-color: green!important;">
+             <p>Pic atteint</p>
+             <p class="text-end text-lg">
+              {{ cartes_vendues }}/ {{ nbreCarteAchat }} %
              </p>
           </div>
       </VCol>
@@ -719,6 +747,34 @@ watch(filter, (newValue) => {
    
   </VCard>
 </template>
+
+<style>
+/* Remplacer le style existant par : */
+
+.border-sm {
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+@keyframes borderFlash {
+  0% {
+    border-color: currentColor;
+    opacity: 1;
+  }
+  50% {
+    border-color: currentColor;
+    opacity: 0.3;
+  }
+  100% {
+    border-color: currentColor;
+    opacity: 1;
+  }
+}
+
+.border-flash {
+  animation: borderFlash 1s ease-in-out infinite;
+}
+</style>
 
 
 

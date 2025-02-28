@@ -9,7 +9,10 @@ definePage({
 })
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import { paginationMeta } from '@api-utils/paginationMeta'
+import { useCookie } from '@/@core/composable/useCookie'
 import { $api } from '@/utils/api';
+import { ref } from 'vue';
+import axios from 'axios';
 
 
 const searchQuery = ref('')
@@ -24,8 +27,12 @@ const actionText = ref("")
 const actionButtonText = ref("")
 const actionFunction = ref()
 const actionComment = ref("")
+const commentRetour = ref("")
 const commentPresence = ref(false)
+const returnPresence = ref(false)
 const possessorIdFilter = ref(null)
+const motif = ref("")
+const possessorID= ref(null)
 const headers = [
 	{
 		title: 'Numéro de carte',
@@ -50,6 +57,17 @@ const headers = [
 		title: 'Expiration',
 		key: 'expiration_per_centage'
 	},
+  {
+    title: 'Commentaire retour',
+    key: 'comment_retour',
+    sortable: false,
+    // On n'affiche la colonne que si comment_retour n'est pas null et etat_validation est false
+    show: (item) => item.comment_retour !== null && !item.etat_validation
+  },
+  {
+    title:'Etat',
+    key:'etat'
+  },
 	{
 		title: 'Actions',
 		key: 'actions',
@@ -97,20 +115,52 @@ const {
 } = await useApi(createUrl('/user', {
 	query: {
 		paginate: 'false',
-		multi_profile: { 'marketing_manager': "rc-mm-ah", "agency_head": "rc-ah", "responsible_for_customer": "rc" }[connectedUser.role]
+		multi_profile: { 'marketing_manager': "rc-mm-ah", "agency_head": "mm-rc-ah", "responsible_for_customer": "rc" }[connectedUser.role]
 	},
 }))
 const possessorList = computed(() => possessorListData.value.data)
 
 const creditCardList = computed(() => creditCardListData.value.data)
-console.log("mes cartes",creditCardList);
+
 const totalcreditCard = computed(() => creditCardListData.value.total)
 const lastPage = computed(() => creditCardListData.value.last_page)
 // Math.min(Math.ceil(totalcreditCard / itemsPerPage), 5)
 const isSnackbarScrollReverseVisible = ref(false)
 const snackbarMessage = ref("")
 const snackbarCollor = ref("success")
+const token = useCookie('userToken').value;
 
+
+function handleReturn(){
+  axios.post("http://localhost:8000/api/credit-card/return-credit-card", {
+    possessor_id:possessorID.value,
+    credit_card_id:selectedItemId.value,
+    motif:motif.value,
+    comment_retour:actionComment.value
+  }, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }).then(res => {
+    if(res){
+      fetchcreditCard()
+    }
+  }).catch(error=>console.log(error))
+}
+function apiValidate(){
+  axios.post("http://localhost:8000/api/credit-card/validate-return-credit-card",{
+    credit_card_id:selectedItemId.value,
+  },{
+    headers:{
+      'Authorization': `Bearer ${token}`
+    }
+  }).then(res=>{
+    if(res){
+      fetchcreditCard()
+
+    }
+  }).catch(error=>console.log(error))
+}
 </script>
 
 <template>
@@ -203,6 +253,22 @@ const snackbarCollor = ref("success")
 						</div>
 					</div>
 				</template>
+        <template #item.etat="{ item }">
+					<div class="">
+						<VChip class="ma-2"
+							:color="{ 'Endommage': 'error', 'Non vendu': 'warning', 'Bon': 'success' }[item.etat]"
+							label>
+							<v-icon
+								:icon="{ 'Endommage': 'tabler-alert-triangle', 'Non vendu': 'tabler-alert-circle', 'Bon': 'tabler-check' }[item.etat]"
+								start>
+							</v-icon>
+							{{ item.etat }}
+						</VChip>
+						<div class="w-25">
+							<!-- {{ item.etat }} -->
+						</div>
+					</div>
+				</template>
 
 				<template #item.actions="{ item }">
 					<div class="text-center">
@@ -214,6 +280,18 @@ const snackbarCollor = ref("success")
 								</VTooltip>
 								<VIcon icon=" tabler-eye" />
 							</IconBtn>
+              <IconBtn :cardId="item.id"
+								v-if="$can('read', 'credit-card') || $can('historical', 'credit-card') || $can('update', 'credit-card')"
+								@click="selectedItemId = item.id; actionTitle = 'Retourner la carte';
+								actionText = 'Motif du retour de la carte'; 
+								actionFunction = handleReturn;
+								actionButtonText = 'Retourner';
+								returnPresence = true;
+								isActionDialogVisible = true;">
+								<VTooltip activator="parent" transition="scroll-x-transition" location="start">Retourner
+								</VTooltip>
+								<VIcon icon=" tabler-transfer-in" />
+							</IconBtn>
 							<IconBtn v-if="$can('update', 'credit-card')"
 								:to="{ name: 'credit-card-edit-id', params: { id: item.id } }"
 								:disabled="item.status == 'validated'">
@@ -222,15 +300,30 @@ const snackbarCollor = ref("success")
 								<VIcon icon="tabler-edit" />
 							</IconBtn>
 						</div>
+            <VDivider />
 						<div v-if="$can('delete', 'credit-card')">
-							<VDivider />
 							<IconBtn v-if="$can('delete', 'credit-card')" :disabled="item.status == 'validated'" @click=" selectedItemId = item.id; actionTitle = 'Supprimer la carte',
 								actionText = 'Voulez vous vraiment supprimer cette coficarte?', actionFunction = apiDelete;
-							actionButtonText = 'Supprimer'; commentPresence = false; isActionDialogVisible = true;">
+							  actionButtonText = 'Supprimer'; commentPresence = false; isActionDialogVisible = true;">
 								<VTooltip activator="parent" transition="scroll-x-transition" location="end">Supprimer
 								</VTooltip>
 								<VIcon icon="tabler-trash" color='error' />
 							</IconBtn>
+              <IconBtn v-if="$can('validate', 'credit-card') && connectedUser.role === 'marketing_manager' && ['Endommage', 'Non vendu'].includes(item.etat) && !item.etat_validation" 
+                @click="selectedItemId = item.id; actionTitle = 'Valider le retour',
+                actionText = 'Voulez vous vraiment valider ce retour de carte?', actionFunction = apiValidate;
+                actionButtonText = 'Valider'; commentPresence = false; isActionDialogVisible = true;">
+                <VTooltip activator="parent" transition="scroll-x-transition" location="end">Valider le retour
+                </VTooltip>
+                <VIcon icon="tabler-check" color='success' />
+              </IconBtn>
+              <!-- <IconBtn v-if="$can('validate', 'credit-card')" :disabled="item.status == 'validated'" @click=" selectedItemId = item.id; actionTitle = 'Supprimer la carte',
+								actionText = 'Voulez vous vraiment valider ce retour de carte?', actionFunction = apiDelete;
+							  actionButtonText = 'Valider'; commentPresence = false; isActionDialogVisible = true;">
+								<VTooltip activator="parent" transition="scroll-x-transition" location="end">Valider
+								</VTooltip>
+								<VIcon icon="tabler-check" color='success' />
+							</IconBtn> -->
 						</div>
 					</div>
 				</template>
@@ -273,9 +366,21 @@ const snackbarCollor = ref("success")
 			<VCard :title="actionTitle">
 				<VCardText>
 					{{ actionText }}
-
-					<AppTextarea v-if="commentPresence" class="mt-3" v-model="actionComment" label="Commentaire"
+          <AppSelect v-if="returnPresence" class="mt-3" :items="['Endommage', 'Non vendu']" v-model="motif" label="Motif" />
+          <AppSelect 
+            v-if="returnPresence" 
+            class="mt-3" 
+            :items="possessorList"
+            item-title="name"
+            item-value="id" 
+            label="Nouveau possesseur"
+            v-model="possessorID"
+            placeholder="Sélectionner un possesseur"
+          />
+          <AppTextarea v-if="commentPresence ||returnPresence " class="mt-3" v-model="actionComment" label="Commentaire"
 						placeholder="Ex: RAS" />
+          <!-- <AppSelect v-if="commentPresence" class="mt-3" :items="possessorList" /> -->
+          <!-- <AppSelect v-if="commentPresence"  class="mt-3" /> -->
 				</VCardText>
 
 				<VCardText class="d-flex justify-end gap-3 flex-wrap">

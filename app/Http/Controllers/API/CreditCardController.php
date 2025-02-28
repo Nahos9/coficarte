@@ -12,6 +12,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+
+use function PHPUnit\Framework\isNull;
+
 /**
  * @group Coficarte
  *
@@ -236,6 +239,18 @@ class CreditCardController extends Controller
 				->where('agencies.id', $connectedUser->agency_id) // Ajout de cette condition
 				->select(DB::raw('count(*) as total'))
 				->get();
+				// dd($cartes_de_agence_avant_date[0]->total);
+				if($cartes_de_agence_avant_date[0]->total <= 5){
+					$user = [
+						"subject" => "ALERTE STOCK!!!",
+						"email" => $connectedUser->email,
+						"name"=> $connectedUser->name,
+						"stock" => $cartes_de_agence_avant_date[0]->total
+					];
+
+				\Mail::to($connectedUser["email"])->send(new \App\Mail\AlerteStockMail($user));
+
+				}
 			$cartes_de_agence = DB::select("SELECT COUNT(*) total
 			FROM credit_cards cc 
 			JOIN users u ON u.id = cc.possessor_id
@@ -317,7 +332,7 @@ class CreditCardController extends Controller
 			// dd($vente_agence_a_date);
 		}
 
-	if($userProfil == "responsible_for_customer" || $userProfil == "caf"){
+		if($userProfil == "responsible_for_customer" || $userProfil == "caf"){
 		$cartes_staff_avant_date = DB::table('credit_cards')
 				->join('users', 'credit_cards.possessor_id', '=', 'users.id')
 				->join('agencies', 'users.agency_id', '=', 'agencies.id')
@@ -414,7 +429,7 @@ class CreditCardController extends Controller
 
 		// dd($vente_staff_a_date,$vente_staff);
 		
-	}
+		}
 		$stats = [];
 		
 
@@ -455,9 +470,9 @@ class CreditCardController extends Controller
 			GROUP BY a.name",[$start_date,$end_date]);
 	
 		
-	$agenceBessieux = Agency::where('name', 'Agence Bessieux')->first(['id']);
+		$agenceBessieux = Agency::where('name', 'Agence Bessieux')->first(['id']);
 	
-	$vent_bessieux_a_date = DB::select(
+		$vent_bessieux_a_date = DB::select(
 			"SELECT 
 				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
 				SUM(sales.sale_price) as mt_vendue,
@@ -472,7 +487,7 @@ class CreditCardController extends Controller
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC"
 		,);
-	// dd($vent_bessieux_a_date);
+		// dd($vent_bessieux_a_date);
 
 		$vent_bessieux = DB::select("
 			SELECT 
@@ -540,8 +555,8 @@ class CreditCardController extends Controller
 			AND sales.sale_date <= '$end_date'
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC"
-	);
-	// dd($vente_louis);
+		);
+		// dd($vente_louis);
 
 		$vente_louis_a_date = DB::select("
 			SELECT 
@@ -582,13 +597,19 @@ class CreditCardController extends Controller
 
 
 
+	
+		
 		$montant_carte_vendues_hors_pack = DB::select('SELECT SUM(sales.sale_price) as total_vente FROM sales WHERE sales.is_dotation = false AND sales.unlock_status = "unlocked"');
-		$montant_achat_hors_pack = DB::select('SELECT SUM(credit_cards.buy) as total_vente FROM sales JOIN credit_cards ON sales.credit_card_id = credit_cards.id  WHERE sales.is_dotation = false AND sales.unlock_status = "unlocked"');
-		$montant_achat_pack = DB::select('SELECT SUM(credit_cards.buy) as total_vente FROM sales JOIN credit_cards ON sales.credit_card_id = credit_cards.id  WHERE sales.is_dotation = true AND sales.unlock_status = "unlocked"');
+		$montant_achat = DB::select("SELECT SUM(credit_cards.buy) as total_achat FROM credit_cards WHERE delivery_date <= '$end_date'");
+		$montant_achat_date = DB::select("SELECT SUM(credit_cards.buy) as total_achat FROM credit_cards WHERE delivery_date BETWEEN ? AND ?",[$start_date,$end_date]);
+		$nbr_carte_achat = DB::select("SELECT COUNT(credit_cards.buy) as total_achat FROM credit_cards WHERE delivery_date <= '$end_date'");
+		$nbr_carte_achat_date = DB::select("SELECT COUNT(credit_cards.buy) as total_achat FROM credit_cards WHERE delivery_date BETWEEN ? AND ?",[$start_date,$end_date]);
+		// dd($montant_achat_date);
+		
+		$montant_achat_pack = DB::select('SELECT SUM(credit_cards.buy) as total_achat FROM sales JOIN credit_cards ON sales.credit_card_id = credit_cards.id  WHERE sales.is_dotation = true AND sales.unlock_status = "unlocked"');
 		$montant_carte_vendues_pack = DB::select('SELECT SUM(sales.sale_price) as total_vente FROM sales WHERE sales.is_dotation = true AND sales.unlock_status = "unlocked"');
 		$montant_vendu_carte = $nbre_total_vendu * 11900;
 		$montant_achat_cartes = $nbre_total_vendu * 5000;
-		
 		$benefices = $montant_vendu_carte - $montant_achat_cartes;
 		if($montant_vendu_carte == 0){
 			$taux_marge = 0;
@@ -602,7 +623,14 @@ class CreditCardController extends Controller
 		// $stock_bessieux = DB::select("SELECT * FROM agencies a JOIN users u ON u.agency_id = a")
 		$stats['cartes_par_agence'] = empty($cartes_par_agence) ? $cartes_par_agence_avant_date: $cartes_par_agence;
 		$stats['cartes_vendues_par_agence'] = empty($agencySales) ? $agencySales_a_date: $agencySales;
-		// dd($stats['cartes_vendues_par_agence']);
+		
+		// $stats["montant_achat"] = isNull($montant_achat_date[0]->total_achat) ? Int($montant_achat[0]->total_achat) : Int($montant_achat_date[0]->total_achat);
+		$stats["nbre_carte_achat"] = is_null($nbr_carte_achat_date[0]->total_achat ?? null) 
+			? intval($nbr_carte_achat[0]->total_achat ?? 0) 
+			: intval($nbr_carte_achat_date[0]->total_achat ?? 0);
+		$stats["montant_achat"] = is_null($montant_achat_date[0]->total_achat ?? null) 
+			? intval($montant_achat[0]->total_achat ?? 0) 
+			: intval($montant_achat_date[0]->total_achat ?? 0);
 		$stats["stock"] = ($total_stock_initial == 0)? $sotk_a_date:$total_stock_initial;
 		$stats["total_stock_initial"] = $total_stock_initial;
 		$stats["nrb_cartes_sale_pack"] = $nrb_cartes_sale_pack;
@@ -654,5 +682,48 @@ class CreditCardController extends Controller
 
 		return response()->json($stats);
 
+	}
+
+	public function returnCard(Request $request) {
+		// dd($request->all());
+		$creditCard = CreditCard::find($request->credit_card_id);
+		if(!$creditCard) {
+			return response()->json([
+				'message' => 'Carte de crédit non trouvée'
+			], 404);
+		}
+
+		$creditCard->possessor_id = $request->possessor_id;
+		$creditCard->etat = $request->motif;
+		$creditCard->comment_retour = $request->comment_retour;
+		$creditCard->date_retour = Carbon::now()->toDateString();
+		$creditCard->save();
+
+		return response()->json([
+			'message' => 'La carte a été retournée avec succès',
+			'creditCard' => $creditCard
+		]);
+	}
+
+	public function valideReturnCard(Request $request)
+	{
+		$creditCard = CreditCard::find($request->credit_card_id);
+		if(!$creditCard) {
+			return response()->json([
+				'message' => 'Carte de crédit non trouvée'
+			], 404);
+		}
+		$connectedUser = $request->user();
+		$creditCard->user_ayant_valide = $connectedUser->name;
+		$creditCard->date_validation_retour = Carbon::now()->toDateString();
+		$creditCard->etat_validation = true;
+		$creditCard->save();
+
+		return response()->json([
+			'message' => 'Validation retour carte avec succès',
+			'creditCard' => $creditCard
+		]);
+
+		// dd($connectedUser,$creditCard);
 	}
 }

@@ -121,6 +121,10 @@ class User extends Authenticatable
             'subject' => ['credit-card', 'account-type']
           ],
           [
+            'action' => ['validate'],
+            'subject' => ['credit-card']
+          ],
+          [
             'action' => ['create', 'update', 'trate', 'cancel', 'reject', 'validate'],
             'subject' => ['transfer']
           ],

@@ -37,6 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::prefix("credit-card")->name("credit-card.")->group(function () {
 		Route::get("/", [CreditCardController::class, "index"])->name("index");
 		Route::get("/stats",[CreditCardController::class,"statistiques"])->name("statistiques");
+		Route::post("/return-credit-card",[CreditCardController::class,"returnCard"])->name("returnCard");
+		Route::post("/validate-return-credit-card",[CreditCardController::class,"valideReturnCard"])->name("valideReturnCard");
 		Route::get("/{id}", [CreditCardController::class, "show"])->name("show");
 		Route::post("/", [CreditCardController::class, "store"])->name("store");
 		Route::put("/update-price", [CreditCardController::class, "update_price"])->name("update-price");
