@@ -24,6 +24,7 @@ const saleData = ref({
 	account_type_id: null,
 	customer_phone_number: null,
   is_dotation: false,
+  code_operation:null
 });
 
 const numCompte = ref('')
@@ -42,6 +43,7 @@ const getResetSaleError = () => {
 		account_type_id: "",
 		customer_phone_number: "",
     is_dotation: "",
+    code_operation:""
 	};
 };
 
@@ -75,6 +77,7 @@ const onSubmit = () => {
 					account_type_id: saleData.value.account_type_id,
 					customer_phone_number: saleData.value.customer_phone_number,
           is_dotation: saleData.value.is_dotation,
+          code_operation:saleData.value.code_operation,
 				},
 			});
 
@@ -149,6 +152,8 @@ watch(numCompte, async (newValue) => {
    saleData.value.customer_phone_number = listeComptes.value.data.ecritures[0].tel_replegal
    saleData.value.date_expiration = listeComptes.value.data.ecritures[0].dval_piece
    saleData.value.number_piece = listeComptes.value.data.ecritures[0].numero_piece_identite
+   saleData.value.code_operation = listeComptes.value.data.ecritures[0].code_oper
+   saleData.value.is_dotation = saleData.value.code_operation === "381"
   }
 })
 </script>
@@ -168,11 +173,11 @@ watch(numCompte, async (newValue) => {
           label="Numéro de compte"
         />
       </VCol>
-      <VCol cols="12" md="6" lg="4">
+      <!-- <VCol cols="12" md="6" lg="4">
         <AppTextField 
         v-model="numEven"
         label="Numéro de l'evenement" />
-      </VCol>
+      </VCol> -->
     </VRow>
     </div>
 		</div>
@@ -194,6 +199,10 @@ watch(numCompte, async (newValue) => {
 										<VCol cols="12" md="12" lg="12">
 											<AppTextField v-mask="'####'" v-model="saleData.number_id" :error-messages="saleError.number_id
 												" label="4 Derniers chiffres du numéro de la carte" placeholder="Ex: 2595" :rules="[requiredValidator]" />
+										</VCol>
+                    <VCol cols="12" md="12" lg="12">
+											<AppTextField v-mask="'####'" v-model="saleData.code_operation" :error-messages="saleError.code_operation
+												" label="Code opération" placeholder="Ex: 007" :rules="[requiredValidator]" />
 										</VCol>
 										<VCol cols="12" md="12" lg="12">
 											<AppSelect v-model="saleData.customer_type"
@@ -218,6 +227,7 @@ watch(numCompte, async (newValue) => {
                         :rules="[requiredValidator]"
                       />
                   </VCol>
+                  
                     <VCol cols="12">
 											<AppTextField v-model="saleData.number_piece" :error-messages="saleError.number_piece
 												" label="Numéro de la pièce" placeholder="Ex: GA2456TA" :rules="[requiredValidator]" />

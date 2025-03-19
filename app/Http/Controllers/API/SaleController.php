@@ -130,7 +130,8 @@ class SaleController extends Controller
 				"account_number" => "nullable|min_digits:12",
 				// "account_type_id" => "required|exists:account_types,id",
 				"customer_phone_number" => "required|min:2",
-				"is_dotation" => "nullable|boolean"
+				"is_dotation" => "nullable|boolean",
+				"code_operation" => "nullable|min_digits:3"
 			],
 			manualValidations: function ($requestData) use ($connectedUser) {
 				$creditCard = CreditCard::find($requestData["credit_card_id"]);

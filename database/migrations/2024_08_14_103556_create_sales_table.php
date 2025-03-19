@@ -28,6 +28,7 @@ return new class extends Migration {
 			$table->enum("unlock_status", ["locked", "unlocked"])->default("locked");
 			$table->decimal('sale_price');
 			$table->string("customer_phone_number");
+			$table->integer("code_operation")->nullable();
 			$table->timestamps();
 		});
 	}

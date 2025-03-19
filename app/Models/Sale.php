@@ -28,7 +28,8 @@ class Sale extends Model
 		"unlock_status",
 		"sale_price",
 		"customer_phone_number",
-		"is_dotation"
+		"is_dotation",
+		"code_operation"
 	];
 
 	protected $appends = ["customer_type_fr", "unlock_status_fr", "sale_price_fr"];
