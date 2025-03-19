@@ -7,7 +7,7 @@ definePage({
 	},
 });
 import AppSelect from "@/@core/components/app-form-elements/AppSelect.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const router = useRouter();
 
@@ -26,6 +26,9 @@ const saleData = ref({
   is_dotation: false,
 });
 
+const numCompte = ref('')
+const numEven = ref('')
+const listeComptes = ref(null)
 const getResetSaleError = () => {
 	return {
 		sale_date: "",
@@ -125,15 +128,53 @@ const accountTypeList = computed(() => AccountTypeListData.value.data)
 const isSnackbarScrollReverseVisible = ref(false);
 const snackbarMessage = ref("");
 const snackbarCollor = ref("success");
+const recherEcriture = async () => {
+  if (numCompte.value) {
+    const response = await fetch(
+      `/api/ecritures/search?search=${encodeURIComponent(numCompte.value)}`
+    );
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des données");
+    }
+    return await response.json();
+  }
+};
+
+watch(numCompte, async (newValue) => {
+  if(newValue){
+    listeComptes.value = await recherEcriture(newValue)
+   saleData.value.account_number = listeComptes.value.data.ecritures[0].no_compte
+   saleData.value.customer_name = listeComptes.value.data.ecritures[0].nom_replegal
+   saleData.value.customer_phone_number = listeComptes.value.data.ecritures[0].tel_replegal
+   saleData.value.customer_phone_number = listeComptes.value.data.ecritures[0].tel_replegal
+   saleData.value.date_expiration = listeComptes.value.data.ecritures[0].dval_piece
+   saleData.value.number_piece = listeComptes.value.data.ecritures[0].numero_piece_identite
+  }
+})
 </script>
 
 <template>
 	<div>
 		<div class="d-flex flex-wrap justify-start justify-sm-space-between gap-y-4 gap-x-6 mb-6">
-			<div class="d-flex flex-column justify-center">
+		<div class="d-flex gap-4" style="width: 100%;">
+      <div class="d-flex flex-column justify-center">
 				<h4 class="text-h4 font-weight-medium">Ajouter des cartes</h4>
 				<span>Informations sur la première cartes du lot</span>
 			</div>
+      <VRow>
+      <VCol cols="12" md="6" lg="4">
+        <AppTextField
+        v-model="numCompte"
+          label="Numéro de compte"
+        />
+      </VCol>
+      <VCol cols="12" md="6" lg="4">
+        <AppTextField 
+        v-model="numEven"
+        label="Numéro de l'evenement" />
+      </VCol>
+    </VRow>
+    </div>
 		</div>
 		<VForm ref="refForm" @submit.prevent="onSubmit">
 			<VRow>

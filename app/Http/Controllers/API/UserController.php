@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
@@ -267,5 +268,19 @@ class UserController extends Controller
 			modelId: $id,
 			modelClass: "App\Models\User",
 		);
+	}
+
+	public function ecritures(Request $request)
+	{
+		$search = $request->input('search');
+		$ecritures = DB::connection('oracle')
+		->select("SELECT cc.nom_replegal,e.code_oper, c.no_compte,cc.dval_piece,cc.numero_piece_identite,cc.tel_replegal FROM cofina.ecriture e 
+		JOIN cofina.compte c ON e.no_compte = c.no_compte
+		JOIN cofina.client cc ON c.matricule_client = cc.matricule_client 
+		WHERE e.no_compte ='$search'
+		AND ROWNUM = 1 ORDER BY d_ecr DESC");
+		return $this->responseOk([
+			"ecritures" => $ecritures
+		]);
 	}
 }

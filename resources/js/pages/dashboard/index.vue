@@ -62,9 +62,13 @@ let stockAgence;
 let cartesVendueAgence;
 let montantVenduAgence;
 let ventesAgence;
+let carteVendueAgenceInpack
+let carteVendueAgenceOrpack
 if(userRole == 'agency_head'){
 stockAgence = computed(() => stats.value.stok_agence)
 cartesVendueAgence = computed(() => stats.value.cartes_vendu_agence)
+carteVendueAgenceInpack = computed(() => stats.value.cartes_vendu_agence_inpack)
+carteVendueAgenceOrpack = computed(() => stats.value.cartes_vendu_agence_horspack)
 montantVenduAgence = computed(() => stats.value.montant_vendu_agence)
 ventesAgence = computed(()=> stats.value.ventes_agences || [])
 // console.log(object);
@@ -79,8 +83,10 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   montantVenduStaff = computed(()=>stats.value.montant_vendu_staff)
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
+// URL = 'https://coficartega.cofinaonline.com/api/credit-card/stats'
+// URL1 = 'http://localhost:8000/api/credit-card/stats'
 function getStats() {
-  axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
+  axios.get('http://localhost:8000/api/credit-card/stats', {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -672,6 +678,22 @@ watch(filter, (newValue) => {
              <p>Cartes vendues</p>
              <p class="text-end text-lg">
               {{ cartesVendueAgence }}
+             </p>
+          </div>
+        </VCol>
+        <VCol cols="4" class="">
+          <div class="border-sm py-3 px-1" style="border-color: green!important;">
+             <p>Cartes vendues hors pack</p>
+             <p class="text-end text-lg">
+              {{ carteVendueAgenceOrpack }}
+             </p>
+          </div>
+        </VCol>
+        <VCol cols="4" class="">
+          <div class="border-sm py-3 px-1" style="border-color: yellow!important;">
+             <p>Cartes vendues dans le pack</p>
+             <p class="text-end text-lg">
+              {{ carteVendueAgenceInpack }}
              </p>
           </div>
         </VCol>
