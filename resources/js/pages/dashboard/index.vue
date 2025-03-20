@@ -617,7 +617,7 @@ watch(filter, (newValue) => {
         </VCol>
         <VCol cols="3">
           <div class=" border-sm py-3 px-1" style="border-color: blue!important;">
-             <p>Total de cartes vendues Nahos</p>
+             <p>Total de cartes vendues</p>
              <p class="text-end text-lg">
               {{ cartes_vendues }}
              </p>
