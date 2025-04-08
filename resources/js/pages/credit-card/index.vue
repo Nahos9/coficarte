@@ -115,7 +115,7 @@ const {
 } = await useApi(createUrl('/user', {
 	query: {
 		paginate: 'false',
-		multi_profile: { 'marketing_manager': "rc-mm-ah", "agency_head": "mm-rc-ah", "responsible_for_customer": "rc" }[connectedUser.role]
+		multi_profile: { 'marketing_manager': "rc-mm-ah", "agency_head": "mm-rc-ah", "responsible_for_customer": "mm-rc-ah" }[connectedUser.role]
 	},
 }))
 const possessorList = computed(() => possessorListData.value.data)
