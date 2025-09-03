@@ -23,6 +23,8 @@ const chartCanvas3 = ref(null)
 const chartCanvas4 = ref(null)
 const chartCanvas5 = ref(null)
 const chartCanvas6 = ref(null)
+const chartCanvas7 = ref(null)
+const chartCanvas8 = ref(null)
 
 
 
@@ -33,6 +35,8 @@ let chart3 = null;// Pour stocker l'instance du graphique
 let chart4 = null;// Pour stocker l'instance du graphique
 let chart5 = null;// Pour stocker l'instance du graphique
 let chart6 = null;// Pour stocker l'instance du graphique
+let chart7 = null;// Pour stocker l'instance du graphique
+let chart8 = null;// Pour stocker l'instance du graphique
 
 const startDate = ref(null)
 const endDate = ref(null)
@@ -44,6 +48,8 @@ const cartesVenduesParAgency = computed(() => stats.value.cartes_vendues_par_age
 const statistiqueBessieux = computed(() => stats.value.test || [])
 const statistiqueNzeng = computed(() => stats.value.test1 || [])
 const statistiqueLouis = computed(() => stats.value.test2 || [])
+const statistiqueLeonMBA = computed(() => stats.value.test3 || [])
+const statistiquePK12 = computed(() => stats.value.test4 || [])
 const stock = computed(()=>stats.value.stock)
 
 
@@ -84,9 +90,28 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
 // URL = 'https://coficartega.cofinaonline.com/api/credit-card/stats'
-// URL1 = 'http://localhost:8000/api/credit-card/stats'
+const URL1 = 'http://localhost:8000/api/credit-card/stats'
+// function getStats() {
+//   axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
+//     headers: {
+//       'Authorization': `Bearer ${token}`,
+//     },
+//     params: { 
+//       start_date: startDate.value, 
+//       end_date: endDate.value,
+//       // filter: filter.value
+//     },
+//   })
+//     .then(response => {
+//       stats.value = response.data
+//       updateChart() // Mettre à jour le graphique une fois les données reçues
+//     })
+//     .catch(error => {
+//       console.error(error)
+//     })
+// }
 function getStats() {
-  axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
+  axios.get(URL1, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -184,63 +209,66 @@ if(userRole == 'marketing_manager' || userRole == 'ops'){
   const ctx2 = chartCanvas2.value.getContext('2d')
   const ctx3 = chartCanvas3.value.getContext('2d')
   const ctx4 = chartCanvas4.value.getContext('2d')
+  const ctx7 = chartCanvas7.value.getContext('2d')
+  const ctx8 = chartCanvas8.value.getContext('2d')
+
   // Créer le graphique pour cartes par agence
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: cartesParAgency.value.map(stat => stat.agency_name),
-      datasets: [
-        {
-          label: 'Répartition des cartes par agences',
-          data: cartesParAgency.value.map(stat => stat.total),
-          backgroundColor: ['#9e9d9b'],
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: cartesParAgency.value.map(stat => stat.agency_name),
+        datasets: [
+          {
+            label: 'Répartition des cartes par agences',
+            data: cartesParAgency.value.map(stat => stat.total),
+            backgroundColor: ['#9e9d9b'],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          },
         },
       },
-    },
-  })
+    })
 
   // Créer le graphique pour cartes vendues par agence
-  if (chart1) {
-    chart1.destroy()
-    chart1 = null
-  }
-  chart1 = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: cartesVenduesParAgency.value.map(stat => stat.agence),
-      datasets: [
-        {
-          label: 'Montant des cartes vendues par agences',
-          data: cartesVenduesParAgency.value.map(stat => stat.montant),
-          backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6'],
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
+    if (chart1) {
+      chart1.destroy()
+      chart1 = null
+    }
+    chart1 = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: cartesVenduesParAgency.value.map(stat => stat.agence),
+        datasets: [
+          {
+            label: 'Montant des cartes vendues par agences',
+            data: cartesVenduesParAgency.value.map(stat => stat.montant),
+            backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6'],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          },
         },
       },
-    },
-  })
+    })
 
   // Créer le graphique pour montant vendu par l'agence
-  if (chart2) {
-    chart2.destroy()
-    chart2 = null
-  }
+    if (chart2) {
+      chart2.destroy()
+      chart2 = null
+    }
   
     chart2 = new Chart(ctx2, {
     type: 'line',
@@ -413,6 +441,128 @@ function getWeekNumber2(d) {
         },
     },
 });
+
+  // Léon Mba
+  if (chart7) {
+    chart7.destroy()
+    chart7 = null
+  }
+  function getWeekNumber3(d) {
+      const oneJan = new Date(d.getFullYear(), 0, 1);
+      const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+      return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+  }
+  function groupByPeriod3(data, filter) {
+      const groupedData = {};
+      data.forEach(stat => {
+          if (!stat.sale_date || !stat.mt_vendue) return;
+          const saleDate = new Date(stat.sale_date);
+          let key = "";
+          switch (filter) {
+              case 'Jour':
+                  key = saleDate.toLocaleDateString('fr-FR');
+                  break;
+              case 'Semaine':
+                  key = `Semaine ${getWeekNumber3(saleDate)}`;
+                  break;
+              case 'Mois':
+                  key = saleDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+                  break;
+              case 'Année':
+                  key = saleDate.getFullYear().toString();
+                  break;
+          }
+          const montant = parseFloat(stat.mt_vendue) || 0;
+          if (!groupedData[key]) groupedData[key] = 0;
+          groupedData[key] += montant;
+      });
+      return groupedData;
+  }
+  const groupedStats3 = groupByPeriod3(statistiqueLeonMBA.value, filter.value);
+  const labels3 = Object.keys(groupedStats3);
+  const values3 = Object.values(groupedStats3);
+  chart7 = new Chart(ctx7, {
+    type: 'line',
+    data: {
+      labels: labels3,
+      datasets: [
+        {
+          label: "Montant vendu par l'agence Léon Mba",
+          data: values3,
+          backgroundColor: '#3498db',
+          borderColor: '#3498db',
+          borderWidth: 2,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true, position: 'top' } },
+    },
+  });
+
+  // PK12
+  if (chart8) {
+    chart8.destroy()
+    chart8 = null
+  }
+  function getWeekNumber4(d) {
+      const oneJan = new Date(d.getFullYear(), 0, 1);
+      const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+      return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+  }
+  function groupByPeriod4(data, filter) {
+      const groupedData = {};
+      data.forEach(stat => {
+          if (!stat.sale_date || !stat.mt_vendue) return;
+          const saleDate = new Date(stat.sale_date);
+          let key = "";
+          switch (filter) {
+              case 'Jour':
+                  key = saleDate.toLocaleDateString('fr-FR');
+                  break;
+              case 'Semaine':
+                  key = `Semaine ${getWeekNumber4(saleDate)}`;
+                  break;
+              case 'Mois':
+                  key = saleDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+                  break;
+              case 'Année':
+                  key = saleDate.getFullYear().toString();
+                  break;
+          }
+          const montant = parseFloat(stat.mt_vendue) || 0;
+          if (!groupedData[key]) groupedData[key] = 0;
+          groupedData[key] += montant;
+      });
+      return groupedData;
+  }
+  const groupedStats4 = groupByPeriod4(statistiquePK12.value, filter.value);
+  const labels4 = Object.keys(groupedStats4);
+  const values4 = Object.values(groupedStats4);
+  chart8 = new Chart(ctx8, {
+    type: 'line',
+    data: {
+      labels: labels4,
+      datasets: [
+        {
+          label: "Montant vendu par l'agence PK12",
+          data: values4,
+          backgroundColor: '#3498db',
+          borderColor: '#3498db',
+          borderWidth: 2,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true, position: 'top' } },
+    },
+  });
+
+
 }
  
 if(userRole == 'agency_head'){
@@ -764,6 +914,12 @@ watch(filter, (newValue) => {
       </VCol>
       <VCol cols="6">
       <canvas ref="chartCanvas4"></canvas>
+      </VCol>
+      <VCol cols="6">
+      <canvas ref="chartCanvas7"></canvas>
+      </VCol>
+      <VCol cols="6">
+      <canvas ref="chartCanvas8"></canvas>
       </VCol>
     </VRow>
    

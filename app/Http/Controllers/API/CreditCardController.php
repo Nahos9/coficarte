@@ -583,20 +583,20 @@ class CreditCardController extends Controller
 
 		$agenceLouis = Agency::where('name', 'Agence Louis')->first(['id']);
 		$vente_louis = DB::select(
-		"SELECT 
-			DATE_FORMAT(sales.sale_date, '%Y-%m-%d') as month, 
-			SUM(sales.sale_price) as mt_vendue,
-			agencies.name as agence_name,
-			users.name as cassiere_name,
-			sales.sale_date
-			FROM sales 
-			INNER JOIN users ON sales.seller_id = users.id 
-			INNER JOIN agencies ON agencies.id = users.agency_id
-			WHERE sales.agency_id = $agenceLouis->id
-			AND sales.sale_date <= '$end_date'
-			GROUP BY month, agencies.name,users.name,sales.sale_date
-			ORDER BY month ASC"
-		);
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m-%d') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+				FROM sales 
+				INNER JOIN users ON sales.seller_id = users.id 
+				INNER JOIN agencies ON agencies.id = users.agency_id
+				WHERE sales.agency_id = $agenceLouis->id
+				AND sales.sale_date <= '$end_date'
+				GROUP BY month, agencies.name,users.name,sales.sale_date
+				ORDER BY month ASC"
+			);
 		// dd($vente_louis);
 
 		$vente_louis_a_date = DB::select("
@@ -614,6 +614,70 @@ class CreditCardController extends Controller
 			GROUP BY month, agencies.name,users.name,sales.sale_date
 			ORDER BY month ASC
 		", [$start_date, $end_date]);
+
+		$agenceLeonMba = Agency::where('name', 'Agence Léon MBA')->first(['id']);
+		$vente_leon_mba_a_date = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE sales.agency_id = $agenceLeonMba->id
+			AND sales.sale_date <= '$end_date'
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC"
+		);
+		$vente_leon_mba = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE sales.agency_id = $agenceLeonMba->id
+			AND sales.sale_date BETWEEN ? AND ?
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC"
+		, [$start_date, $end_date]);
+
+		$agencePK12 = Agency::where('name', 'Agence PK12')->first(['id']);
+		$vente_pk12_a_date = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE sales.agency_id = $agencePK12->id
+			AND sales.sale_date <= '$end_date'
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC"
+		);
+		$vente_pk12 = DB::select(
+			"SELECT 
+				DATE_FORMAT(sales.sale_date, '%Y-%m') as month, 
+				SUM(sales.sale_price) as mt_vendue,
+				agencies.name as agence_name,
+				users.name as cassiere_name,
+				sales.sale_date
+			FROM sales 
+			INNER JOIN users ON sales.seller_id = users.id 
+			INNER JOIN agencies ON agencies.id = users.agency_id
+			WHERE sales.agency_id = $agencePK12->id
+			AND sales.sale_date BETWEEN ? AND ?
+			GROUP BY month, agencies.name,users.name,sales.sale_date
+			ORDER BY month ASC"
+		, [$start_date, $end_date]);
 	
 		
 		$sotk_a_date = CreditCard::where('delivery_date','<=',$end_date)->where('status','owned')->count();
@@ -682,6 +746,8 @@ class CreditCardController extends Controller
 		$stats["test"] = empty($vent_bessieux) ? $vent_bessieux_a_date : $vent_bessieux;
 		$stats["test1"] = empty($vente_nzeng) ? $vente_nzeng_a_date : $vente_nzeng;
 		$stats["test2"] = empty($vente_louis) ? $vente_louis_a_date : $vente_louis;
+		$stats["test3"] = empty($vente_leon_mba) ? $vente_leon_mba_a_date : $vente_leon_mba;
+		$stats["test4"] = empty($vente_pk12) ? $vente_pk12_a_date : $vente_pk12;
 		$stats["taux_marge"] = $taux_marge;
 		$stats["benefices"] = $benefices;
 		$stats["nbre_total_vendu"] = $nbre_total_vendu;

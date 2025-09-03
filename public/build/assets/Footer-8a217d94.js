@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{o as t,c as s,b as a,t as o}from"./main-463077af.js";const n={},c={class:"h-100 d-flex align-center justify-space-between"},r={class:"d-flex align-center"};function i(l,_){return t(),s("div",c,[a("span",r," © "+o(new Date().getFullYear())+" Cofina Gabon ",1)])}const p=e(n,[["render",i]]);export{p as default};
