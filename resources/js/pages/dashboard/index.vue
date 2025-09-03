@@ -89,8 +89,8 @@ if(userRole == 'caf' || userRole == 'responsible_for_customer'){
   montantVenduStaff = computed(()=>stats.value.montant_vendu_staff)
   venteStaff =  computed(()=>stats.value.ventes_staff || [])
 }
-// URL = 'https://coficartega.cofinaonline.com/api/credit-card/stats'
-const URL1 = 'http://localhost:8000/api/credit-card/stats'
+const URL = 'https://coficartega.cofinaonline.com/api/credit-card/stats'
+// const URL1 = 'http://localhost:8000/api/credit-card/stats'
 // function getStats() {
 //   axios.get('https://coficartega.cofinaonline.com/api/credit-card/stats', {
 //     headers: {
@@ -111,7 +111,7 @@ const URL1 = 'http://localhost:8000/api/credit-card/stats'
 //     })
 // }
 function getStats() {
-  axios.get(URL1, {
+  axios.get(URL, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
